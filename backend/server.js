@@ -18,7 +18,8 @@ import cors from "cors";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
-import dotenv from "dotenv";
+import dotenv from 'dotenv';
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -29,10 +30,15 @@ app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
 // MongoDB Connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/vorratsverwaltung', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+try {
+  await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/vorratsverwaltung', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
+} catch(error) {
+  console.error("Error connecting to MONGODB", error);
+  process.exit(1);
+}
 
 // Multer Setup für Datei-Uploads
 const storage = multer.diskStorage({
