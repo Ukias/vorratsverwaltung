@@ -56,17 +56,21 @@ const InventoryApp = () => {
       const newItem = {
         id: Date.now(),
         name: formData.name,
-        quantity: parseInt(formData.quantity),
+        stueckzahl: parseInt(formData.quantity),
         expiryDate: formData.expiryDate || null,
         image: formData.image || 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&h=300&fit=crop'
       };
       setItems([...items, newItem]);
       // save article in database
-      // try {
-      //   await axios.post("http://localhost:5000/api/vorratsartikel",newItem)
-      // } catch(error) {
-      //   console.log("Error creating note", error)
-      // }
+      try {
+        await api.post("/vorratsartikel",newItem, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+      } catch(error) {
+        console.log("Error creating vorratsartikel", error)
+      }
       resetForm();
       setShowAddForm(false);
     }
