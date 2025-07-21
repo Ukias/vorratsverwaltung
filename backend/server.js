@@ -1,12 +1,24 @@
 // server.js
-const express = require('express');
-const mongoose = require('mongoose');
-const Vorratsartikel = require('./models/Vorratsartikel.js');
-const cors = require('cors');
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
-require('dotenv').config();
+// const express = require('express');
+// const mongoose = require('mongoose');
+// const Vorratsartikel = require('./models/Vorratsartikel.js');
+import { getAllVorratsartikel, getVorratsartikelById, createVorratsartikel, updateVorratsartikel,
+  deleteVorratsartikel, getStatistiken
+ } from './controllers/vorratsController.js';
+// const cors = require('cors');
+// const multer = require('multer');
+// const path = require('path');
+// const fs = require('fs');
+// require('dotenv').config();
+
+import express from "express";
+import mongoose from 'mongoose';
+import Vorratsartikel from './models/Vorratsartikel.js';
+import cors from "cors";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+import dotenv from "dotenv";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -54,165 +66,22 @@ const upload = multer({
 // Routes
 
 // GET - Alle Vorratsartikel abrufen mit Sortierung
-app.get('/api/vorratsartikel', async (req, res) => {
-  try {
-    const { sortBy = 'name', order = 'asc' } = req.query;
-    
-    let sortOptions = {};
-    switch (sortBy) {
-      case 'name':
-        sortOptions = { name: order === 'desc' ? -1 : 1 };
-        break;
-      case 'stueckzahl':
-        sortOptions = { stueckzahl: order === 'desc' ? -1 : 1 };
-        break;
-      case 'haltbarkeitsdatum':
-        sortOptions = { haltbarkeitsdatum: order === 'desc' ? -1 : 1 };
-        break;
-      case 'erstelltAm':
-        sortOptions = { erstelltAm: order === 'desc' ? -1 : 1 };
-        break;
-      default:
-        sortOptions = { name: 1 };
-    }
-
-    const artikel = await Vorratsartikel.find().sort(sortOptions);
-    res.json(artikel);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
+app.get('/api/vorratsartikel', getAllVorratsartikel);
 
 // GET - Einzelnen Vorratsartikel abrufen (für Detailansicht)
-app.get('/api/vorratsartikel/:id', async (req, res) => {
-  try {
-    const artikel = await Vorratsartikel.findById(req.params.id);
-    if (!artikel) {
-      return res.status(404).json({ message: 'Vorratsartikel nicht gefunden' });
-    }
-    res.json(artikel);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
+app.get('/api/vorratsartikel/:id', getVorratsartikelById);
 
 // POST - Neuen Vorratsartikel erstellen
-app.post('/api/vorratsartikel', upload.single('bild'), async (req, res) => {
-  try {
-    const { name, stueckzahl, haltbarkeitsdatum } = req.body;
-    
-    // Validierung
-    if (!name || !stueckzahl) {
-      return res.status(400).json({ message: 'Name und Stückzahl sind erforderlich' });
-    }
-
-    const artikelData = {
-      name: name.trim(),
-      stueckzahl: parseInt(stueckzahl),
-      haltbarkeitsdatum: haltbarkeitsdatum ? new Date(haltbarkeitsdatum) : null,
-      bild: req.file ? req.file.filename : null
-    };
-
-    const neuerArtikel = new Vorratsartikel(artikelData);
-    const gespeicherterArtikel = await neuerArtikel.save();
-    
-    res.status(201).json(gespeicherterArtikel);
-  } catch (error) {
-    // Uploaded file löschen wenn Fehler auftritt
-    if (req.file) {
-      fs.unlinkSync(req.file.path);
-    }
-    res.status(400).json({ message: error.message });
-  }
-});
+app.post('/api/vorratsartikel', upload.single('bild'), createVorratsartikel);
 
 // PUT - Vorratsartikel bearbeiten
-app.put('/api/vorratsartikel/:id', upload.single('bild'), async (req, res) => {
-  try {
-    const { name, stueckzahl, haltbarkeitsdatum } = req.body;
-    
-    const artikel = await Vorratsartikel.findById(req.params.id);
-    if (!artikel) {
-      return res.status(404).json({ message: 'Vorratsartikel nicht gefunden' });
-    }
-
-    // Altes Bild löschen wenn neues hochgeladen wird
-    if (req.file && artikel.bild) {
-      const alteBildPath = path.join('uploads', artikel.bild);
-      if (fs.existsSync(alteBildPath)) {
-        fs.unlinkSync(alteBildPath);
-      }
-    }
-
-    // Update-Daten vorbereiten
-    const updateData = {};
-    if (name) updateData.name = name.trim();
-    if (stueckzahl !== undefined) updateData.stueckzahl = parseInt(stueckzahl);
-    if (haltbarkeitsdatum !== undefined) {
-      updateData.haltbarkeitsdatum = haltbarkeitsdatum ? new Date(haltbarkeitsdatum) : null;
-    }
-    if (req.file) updateData.bild = req.file.filename;
-
-    const aktualisierterArtikel = await Vorratsartikel.findByIdAndUpdate(
-      req.params.id,
-      updateData,
-      { new: true, runValidators: true }
-    );
-
-    res.json(aktualisierterArtikel);
-  } catch (error) {
-    if (req.file) {
-      fs.unlinkSync(req.file.path);
-    }
-    res.status(400).json({ message: error.message });
-  }
-});
+app.put('/api/vorratsartikel/:id', upload.single('bild'), updateVorratsartikel);
 
 // DELETE - Vorratsartikel löschen
-app.delete('/api/vorratsartikel/:id', async (req, res) => {
-  try {
-    const artikel = await Vorratsartikel.findById(req.params.id);
-    if (!artikel) {
-      return res.status(404).json({ message: 'Vorratsartikel nicht gefunden' });
-    }
-
-    // Bild löschen falls vorhanden
-    if (artikel.bild) {
-      const bildPath = path.join('uploads', artikel.bild);
-      if (fs.existsSync(bildPath)) {
-        fs.unlinkSync(bildPath);
-      }
-    }
-
-    await Vorratsartikel.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Vorratsartikel erfolgreich gelöscht' });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
+app.delete('/api/vorratsartikel/:id', deleteVorratsartikel);
 
 // GET - Statistiken abrufen
-app.get('/api/statistiken', async (req, res) => {
-  try {
-    const gesamtArtikel = await Vorratsartikel.countDocuments();
-    const artikelMitBald = await Vorratsartikel.countDocuments({
-      haltbarkeitsdatum: {
-        $lte: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 Tage
-      }
-    });
-    const artikelOhneDatum = await Vorratsartikel.countDocuments({
-      haltbarkeitsdatum: { $exists: false }
-    });
-
-    res.json({
-      gesamtArtikel,
-      artikelMitBald,
-      artikelOhneDatum
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
+app.get('/api/statistiken', getStatistiken);
 
 // Error Handler
 app.use((error, req, res, next) => {
@@ -243,4 +112,4 @@ process.on('SIGTERM', () => {
   });
 });
 
-module.exports = app;
+// module.exports = app;
