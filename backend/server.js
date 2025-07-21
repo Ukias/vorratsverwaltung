@@ -1,19 +1,10 @@
 // server.js
-// const express = require('express');
-// const mongoose = require('mongoose');
-// const Vorratsartikel = require('./models/Vorratsartikel.js');
+
 import { getAllVorratsartikel, getVorratsartikelById, createVorratsartikel, updateVorratsartikel,
   deleteVorratsartikel, getStatistiken
  } from './controllers/vorratsController.js';
-// const cors = require('cors');
-// const multer = require('multer');
-// const path = require('path');
-// const fs = require('fs');
-// require('dotenv').config();
-
 import express from "express";
 import mongoose from 'mongoose';
-import Vorratsartikel from './models/Vorratsartikel.js';
 import cors from "cors";
 import multer from "multer";
 import path from "path";
