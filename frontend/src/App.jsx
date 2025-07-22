@@ -39,27 +39,27 @@ const InventoryApp = () => {
 
   const [formData, setFormData] = useState({
     name: '',
-    quantity: '',
-    expiryDate: '',
+    stueckzahl: '',
+    haltbarkeitsdatum: '',
     image: ''
   });
 
   const resetForm = () => {
     setFormData({
       name: '',
-      quantity: '',
-      expiryDate: '',
+      stueckzahl: '',
+      haltbarkeitsdatum: '',
       image: ''
     });
   };
 
   const handleAddItem = async() => {
-    if (formData.name && formData.quantity) {
+    if (formData.name && formData.stueckzahl) {
       const newItem = {
         id: Date.now(),
         name: formData.name,
-        stueckzahl: parseInt(formData.quantity),
-        expiryDate: formData.expiryDate || null,
+        stueckzahl: parseInt(formData.stueckzahl),
+        haltbarkeitsdatum: formData.haltbarkeitsdatum || null,
         image: formData.image || 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&h=300&fit=crop'
       };
       setItems([...items, newItem]);
@@ -289,13 +289,13 @@ const InventoryApp = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className={`text-sm px-2 py-1 rounded-full inline-block ${
-                        isExpired(item.expiryDate) 
+                        isExpired(item.haltbarkeitsdatum) 
                           ? 'bg-red-100 text-red-800' 
-                          : isExpiringSoon(item.expiryDate)
+                          : isExpiringSoon(item.haltbarkeitsdatum)
                           ? 'bg-yellow-100 text-yellow-800'
                           : 'bg-green-100 text-green-800'
                       }`}>
-                        {formatDate(item.expiryDate)}
+                        {formatDate(item.haltbarkeitsdatum)}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -357,8 +357,8 @@ const InventoryApp = () => {
                   </label>
                   <input
                     type="number"
-                    value={formData.quantity}
-                    onChange={(e) => setFormData({...formData, quantity: e.target.value})}
+                    value={formData.stueckzahl}
+                    onChange={(e) => setFormData({...formData, stueckzahl: e.target.value})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     min="1"
                   />
@@ -369,8 +369,8 @@ const InventoryApp = () => {
                   </label>
                   <input
                     type="date"
-                    value={formData.expiryDate}
-                    onChange={(e) => setFormData({...formData, expiryDate: e.target.value})}
+                    value={formData.haltbarkeitsdatum}
+                    onChange={(e) => setFormData({...formData, haltbarkeitsdatum: e.target.value})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
