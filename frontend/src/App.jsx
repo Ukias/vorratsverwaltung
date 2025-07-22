@@ -105,8 +105,8 @@ const InventoryApp = () => {
     setCurrentItem(item);
     setFormData({
       name: item.name,
-      quantity: item.quantity.toString(),
-      expiryDate: item.expiryDate || '',
+      stueckzahl: item.stueckzahl.toString(),
+      haltbarkeitsdatum: item.haltbarkeitsdatum || '',
       image: item.image || ''
     });
     setShowEditForm(true);
