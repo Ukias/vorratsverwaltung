@@ -3,29 +3,54 @@ import { Plus, Edit2, Trash2, Eye, Search, ArrowUpDown, Package, Calendar, Hash 
 import api from "./lib/axios";
 
 const InventoryApp = () => {
-  const [items, setItems] = useState([
-    {
-      id: 1,
-      name: 'Tomaten',
-      quantity: 5,
-      expiryDate: '2025-07-20',
-      image: 'https://images.unsplash.com/photo-1546470427-e212e5eb1f8f?w=400&h=300&fit=crop'
-    },
-    {
-      id: 2,
-      name: 'Milch',
-      quantity: 2,
-      expiryDate: '2025-07-15',
-      image: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?w=400&h=300&fit=crop'
-    },
-    {
-      id: 3,
-      name: 'Brot',
-      quantity: 1,
-      expiryDate: '2025-07-14',
-      image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400&h=300&fit=crop'
-    }
-  ]);
+  const [items, setItems] = useState([])
+  // const [items, setItems] = useState([
+  //   {
+  //     id: 1,
+  //     name: 'Tomaten',
+  //     quantity: 5,
+  //     expiryDate: '2025-07-20',
+  //     image: 'https://images.unsplash.com/photo-1546470427-e212e5eb1f8f?w=400&h=300&fit=crop'
+  //   },
+  //   {
+  //     id: 2,
+  //     name: 'Milch',
+  //     quantity: 2,
+  //     expiryDate: '2025-07-15',
+  //     image: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?w=400&h=300&fit=crop'
+  //   },
+  //   {
+  //     id: 3,
+  //     name: 'Brot',
+  //     quantity: 1,
+  //     expiryDate: '2025-07-14',
+  //     image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400&h=300&fit=crop'
+  //   }
+  // ]);
+
+    useEffect(() => {
+    const fetchVorratsartikel = async () => {
+      try {
+        const res = await api.get("/vorratsartikel")
+        // console.log(res.data);
+        setItems(res.data);
+        // setIsRateLimited(false);
+      } catch(error) {
+        console.log("Error fetching notes");
+        console.log(error);
+        // if(error.response?.status === 429) {
+        //   setIsRateLimited(true);
+        // } else {
+        //   toast.error("Failed to load notes.")
+        // } 
+      } 
+      // finally {
+      //     setLoading(false);
+      //   }
+    };
+
+    fetchVorratsartikel();
+  },[])
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
