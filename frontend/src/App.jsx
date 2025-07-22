@@ -92,8 +92,13 @@ const InventoryApp = () => {
     }
   };
 
-  const handleDeleteItem = (id) => {
-    setItems(items.filter(item => item.id !== id));
+  const handleDeleteItem = async (id) => {
+    try {
+      await api.delete(`/vorratsartikel/${id}`)
+      setItems(items.filter(item => item._id !== id));
+    } catch(error) {
+      console.log("Error in handleDelete", error)
+    }
   };
 
   const openEditForm = (item) => {
@@ -308,7 +313,7 @@ const InventoryApp = () => {
                           <Edit2 className="h-4 w-4" />
                         </button>
                         <button
-                          onClick={() => handleDeleteItem(item.id)}
+                          onClick={() => handleDeleteItem(item._id)}
                           className="text-red-600 hover:text-red-800 p-1 hover:bg-red-50 rounded"
                         >
                           <Trash2 className="h-4 w-4" />
