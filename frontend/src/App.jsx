@@ -78,11 +78,16 @@ const InventoryApp = () => {
     }
   };
 
-  const handleEditItem = () => {
-    if (formData.name && formData.quantity) {
+  const handleEditItem = async (id) => {
+    if (formData.name && formData.stueckzahl) {
+      try {
+        await api.put(`/vorratsartikel/${id}`, formData)
+      } catch(error) {
+        console.log("Error saving the note", error)
+      }
       const updatedItems = items.map(item => 
-        item.id === currentItem.id 
-          ? { ...item, name: formData.name, quantity: parseInt(formData.quantity), expiryDate: formData.expiryDate || null, image: formData.image || item.image }
+        item._id === currentItem._id 
+          ? { ...item, name: formData.name, stueckzahl: parseInt(formData.stueckzahl), haltbarkeitsdatum: formData.haltbarkeitsdatum || null, image: formData.image || item.image }
           : item
       );
       setItems(updatedItems);
@@ -104,6 +109,7 @@ const InventoryApp = () => {
   const openEditForm = (item) => {
     setCurrentItem(item);
     setFormData({
+      _id: item._id,
       name: item.name,
       stueckzahl: item.stueckzahl.toString(),
       haltbarkeitsdatum: item.haltbarkeitsdatum || '',
@@ -431,8 +437,8 @@ const InventoryApp = () => {
                   </label>
                   <input
                     type="number"
-                    value={formData.quantity}
-                    onChange={(e) => setFormData({...formData, quantity: e.target.value})}
+                    value={formData.stueckzahl}
+                    onChange={(e) => setFormData({...formData, stueckzahl: e.target.value})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     min="1"
                   />
@@ -443,8 +449,8 @@ const InventoryApp = () => {
                   </label>
                   <input
                     type="date"
-                    value={formData.expiryDate}
-                    onChange={(e) => setFormData({...formData, expiryDate: e.target.value})}
+                    value={formData.haltbarkeitsdatum}
+                    onChange={(e) => setFormData({...formData, haltbarkeitsdatum: e.target.value})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -462,7 +468,7 @@ const InventoryApp = () => {
                 </div>
                 <div className="flex space-x-3">
                   <button
-                    onClick={handleEditItem}
+                    onClick={() => handleEditItem(formData._id)}
                     className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
                   >
                     Speichern
