@@ -280,7 +280,7 @@ const InventoryApp = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{item.quantity}</div>
+                      <div className="text-sm text-gray-900">{item.stueckzahl}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className={`text-sm px-2 py-1 rounded-full inline-block ${
