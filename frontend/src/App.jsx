@@ -136,13 +136,13 @@ const InventoryApp = () => {
           aValue = a.name.toLowerCase();
           bValue = b.name.toLowerCase();
           break;
-        case 'quantity':
-          aValue = a.quantity;
-          bValue = b.quantity;
+        case 'stueckzahl':
+          aValue = a.stueckzahl;
+          bValue = b.stueckzahl;
           break;
-        case 'expiryDate':
-          aValue = a.expiryDate ? new Date(a.expiryDate) : new Date('2099-12-31');
-          bValue = b.expiryDate ? new Date(b.expiryDate) : new Date('2099-12-31');
+        case 'haltbarkeitsdatum':
+          aValue = a.haltbarkeitsdatum ? new Date(a.haltbarkeitsdatum) : new Date('2099-12-31');
+          bValue = b.haltbarkeitsdatum ? new Date(b.haltbarkeitsdatum) : new Date('2099-12-31');
           break;
         default:
           return 0;
@@ -234,24 +234,24 @@ const InventoryApp = () => {
                 {sortBy === 'name' && <ArrowUpDown className="h-4 w-4" />}
               </button>
               <button
-                onClick={() => handleSort('quantity')}
+                onClick={() => handleSort('stueckzahl')}
                 className={`px-4 py-2 rounded-lg border transition-colors flex items-center space-x-2 ${
-                  sortBy === 'quantity' ? 'bg-blue-100 border-blue-300' : 'bg-white border-gray-300 hover:bg-gray-50'
+                  sortBy === 'stueckzahl' ? 'bg-blue-100 border-blue-300' : 'bg-white border-gray-300 hover:bg-gray-50'
                 }`}
               >
                 <Package className="h-4 w-4" />
                 <span>Anzahl</span>
-                {sortBy === 'quantity' && <ArrowUpDown className="h-4 w-4" />}
+                {sortBy === 'stueckzahl' && <ArrowUpDown className="h-4 w-4" />}
               </button>
               <button
-                onClick={() => handleSort('expiryDate')}
+                onClick={() => handleSort('haltbarkeitsdatum')}
                 className={`px-4 py-2 rounded-lg border transition-colors flex items-center space-x-2 ${
-                  sortBy === 'expiryDate' ? 'bg-blue-100 border-blue-300' : 'bg-white border-gray-300 hover:bg-gray-50'
+                  sortBy === 'haltbarkeitsdatum' ? 'bg-blue-100 border-blue-300' : 'bg-white border-gray-300 hover:bg-gray-50'
                 }`}
               >
                 <Calendar className="h-4 w-4" />
                 <span>Haltbarkeit</span>
-                {sortBy === 'expiryDate' && <ArrowUpDown className="h-4 w-4" />}
+                {sortBy === 'haltbarkeitsdatum' && <ArrowUpDown className="h-4 w-4" />}
               </button>
             </div>
           </div>
