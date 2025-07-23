@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, Eye, Search, ArrowUpDown, Package, Calendar, Hash } from 'lucide-react';
 import api from "./lib/axios";
-import {Route, Routes} from "react-router"
+import {BrowserRouter, Route, Routes} from "react-router"
+import CreatePage from "./pages/CreatePage";
+import HomePage from "./pages/HomePage"
 
 const InventoryApp = () => {
   const [items, setItems] = useState([])
@@ -192,6 +194,12 @@ const InventoryApp = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<HomePage/>} />
+          <Route path="/create" element={<CreatePage/>} />
+        </Routes>
+      </BrowserRouter>
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
