@@ -282,11 +282,11 @@ const InventoryApp = () => {
                   <tr key={item.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center space-x-3">
-                        <img 
+                        {item.image && <img 
                           src={item.image} 
                           alt={item.name}
                           className="h-10 w-10 rounded-full object-cover"
-                        />
+                        />}
                         <div className="text-sm font-medium text-gray-900">{item.name}</div>
                       </div>
                     </td>
