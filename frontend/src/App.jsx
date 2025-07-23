@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, Eye, Search, ArrowUpDown, Package, Calendar, Hash } from 'lucide-react';
 import api from "./lib/axios";
+import {Route, Routes} from "react-router"
 
 const InventoryApp = () => {
   const [items, setItems] = useState([])
