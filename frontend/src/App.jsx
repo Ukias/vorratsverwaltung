@@ -494,27 +494,27 @@ const InventoryApp = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-lg p-6 w-full max-w-md">
               <div className="text-center">
-                <img 
+                {currentItem.image && <img 
                   src={currentItem.image} 
                   alt={currentItem.name}
                   className="w-48 h-48 mx-auto rounded-lg object-cover mb-4"
-                />
+                />}
                 <h2 className="text-2xl font-bold mb-4">{currentItem.name}</h2>
                 <div className="space-y-2 text-left">
                   <div className="flex justify-between items-center py-2 border-b">
                     <span className="font-medium">Stückzahl:</span>
-                    <span>{currentItem.quantity}</span>
+                    <span>{currentItem.stueckzahl}</span>
                   </div>
                   <div className="flex justify-between items-center py-2 border-b">
                     <span className="font-medium">Haltbarkeitsdatum:</span>
                     <span className={`px-2 py-1 rounded-full text-sm ${
-                      isExpired(currentItem.expiryDate) 
+                      isExpired(currentItem.haltbarkeitsdatum) 
                         ? 'bg-red-100 text-red-800' 
-                        : isExpiringSoon(currentItem.expiryDate)
+                        : isExpiringSoon(currentItem.haltbarkeitsdatum)
                         ? 'bg-yellow-100 text-yellow-800'
                         : 'bg-green-100 text-green-800'
                     }`}>
-                      {formatDate(currentItem.expiryDate)}
+                      {formatDate(currentItem.haltbarkeitsdatum)}
                     </span>
                   </div>
                 </div>
