@@ -4,7 +4,6 @@ import {useState} from "react"
 import api from "../lib/axios";
 
 const CreatePage = () => {
-  console.log('MyComponent rendered at:', new Date().toISOString());
   const [formData, setFormData] = useState({
     name: '',
     stueckzahl: '',
