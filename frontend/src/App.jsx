@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, Eye, Search, ArrowUpDown, Package, Calendar, Hash } from 'lucide-react';
 import api from "./lib/axios";
-import {BrowserRouter, Route, Routes} from "react-router"
+import {Link, BrowserRouter, Route, Routes} from "react-router"
 import CreatePage from "./pages/CreatePage";
 import HomePage from "./pages/HomePage"
 
@@ -208,6 +208,8 @@ const InventoryApp = () => {
               <Package className="h-8 w-8 text-blue-600" />
               <h1 className="text-3xl font-bold text-gray-800">Vorratsverwaltung</h1>
             </div>
+            <BrowserRouter>
+            <Link to={"/create"}>
             <button
               onClick={() => setShowAddForm(true)}
               className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
@@ -215,6 +217,8 @@ const InventoryApp = () => {
               <Plus className="h-5 w-5" />
               <span>Artikel hinzufügen</span>
             </button>
+            </Link>
+            </BrowserRouter>
           </div>
         </div>
 
