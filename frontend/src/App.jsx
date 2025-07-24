@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, Eye, Search, ArrowUpDown, Package, Calendar, Hash } from 'lucide-react';
 import api from "./lib/axios";
-import {Link, BrowserRouter, Route, Routes} from "react-router"
+import {Link, BrowserRouter, Route, Routes, useNavigate} from "react-router"
 import CreatePage from "./pages/CreatePage";
 import HomePage from "./pages/HomePage"
 
@@ -39,6 +39,7 @@ const InventoryApp = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('name');
   const [sortOrder, setSortOrder] = useState('asc');
+  // const navigate = useNavigate()
 
   const [formData, setFormData] = useState({
     name: '',
@@ -199,7 +200,7 @@ const InventoryApp = () => {
           <Route path="/" element={<HomePage/>} />
           <Route path="/create" element={<CreatePage/>} />
         </Routes>
-      </BrowserRouter>
+      
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
@@ -208,7 +209,6 @@ const InventoryApp = () => {
               <Package className="h-8 w-8 text-blue-600" />
               <h1 className="text-3xl font-bold text-gray-800">Vorratsverwaltung</h1>
             </div>
-            <BrowserRouter>
             <Link to={"/create"}>
             <button
               onClick={() => setShowAddForm(true)}
@@ -218,7 +218,6 @@ const InventoryApp = () => {
               <span>Artikel hinzufügen</span>
             </button>
             </Link>
-            </BrowserRouter>
           </div>
         </div>
 
@@ -556,6 +555,7 @@ const InventoryApp = () => {
           </div>
         )}
       </div>
+      </BrowserRouter>
     </div>
   );
 };
