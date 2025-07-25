@@ -4,6 +4,7 @@ import api from "./lib/axios";
 import {Link, BrowserRouter, Route, Routes, useNavigate} from "react-router"
 import CreatePage from "./pages/CreatePage";
 import HomePage from "./pages/HomePage"
+import ArtikelEditPage from './pages/ArtikelEditPage';
 
 const InventoryApp = () => {
   const [items, setItems] = useState([])
@@ -199,6 +200,7 @@ const InventoryApp = () => {
         <Routes>
           <Route path="/" element={<HomePage/>} />
           <Route path="/create" element={<CreatePage/>} />
+          <Route path="/edit/:id" element={<ArtikelEditPage/>}/>
         </Routes>
       
       <div className="max-w-6xl mx-auto">
