@@ -91,18 +91,6 @@ const HomePage = () => {
     }
   };
 
-  const openEditForm = (item) => {
-    setCurrentItem(item);
-    setFormData({
-      _id: item._id,
-      name: item.name,
-      stueckzahl: item.stueckzahl.toString(),
-      haltbarkeitsdatum: item.haltbarkeitsdatum || '',
-      image: item.image || ''
-    });
-    setShowEditForm(true);
-  };
-
   const openDetailView = (item) => {
     setCurrentItem(item);
     setShowDetailView(true);
@@ -249,12 +237,13 @@ const HomePage = () => {
                         >
                           <Eye className="h-4 w-4" />
                         </button>
+                        <Link to={`edit/${item._id}`}>
                         <button
-                          onClick={() => openEditForm(item)}
                           className="text-green-600 hover:text-green-800 p-1 hover:bg-green-50 rounded"
-                        >
+                        >  
                           <Edit2 className="h-4 w-4" />
                         </button>
+                        </Link>
                         <button
                           onClick={() => handleDeleteItem(item._id)}
                           className="text-red-600 hover:text-red-800 p-1 hover:bg-red-50 rounded"
