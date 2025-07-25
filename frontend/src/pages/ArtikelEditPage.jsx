@@ -1,8 +1,127 @@
-import React from 'react'
+import React, { useState, useEffect} from 'react';
+import {useNavigate, useParams} from "react-router"
+import api from "../lib/axios";
 
 const ArtikelEditPage = () => {
+    const [formData, setFormData] = useState({
+        name: '',
+        stueckzahl: '',
+        haltbarkeitsdatum: '',
+        image: ''
+      });
+      const [showEditForm, setShowEditForm] = useState(false);
+      const [currentItem, setCurrentItem] = useState(null);
+      const {id} = useParams();
+      const navigate = useNavigate()
+
+    useEffect(() => {
+        const fetchArtikel = async() => {
+            try {
+                const res = await api.get(`vorratsartikel/${id}`)
+                setFormData(res.data)
+            } catch(error) {
+                console.log("Error in fetching artikel", error)
+            }
+        };
+
+        fetchArtikel();
+    }, [id]);
+
+    const resetForm = () => {
+        setFormData({
+            name: '',
+            stueckzahl: '',
+            haltbarkeitsdatum: '',
+            image: ''
+        });
+    };
+
+    const handleEditItem = async (id) => {
+        if (formData.name && formData.stueckzahl) {
+        try {
+            await api.put(`/vorratsartikel/${id}`, formData)
+        } catch(error) {
+            console.log("Error saving the note", error)
+        }
+        resetForm();
+        setShowEditForm(false);
+        setCurrentItem(null);
+        navigate("/");
+        }
+  };
+
   return (
-    <div>ArtikelEditPage</div>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg p-6 w-full max-w-md">
+              <h2 className="text-xl font-bold mb-4">Artikel bearbeiten</h2>
+              <div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Name *
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.name}
+                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Stückzahl *
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.stueckzahl}
+                    onChange={(e) => setFormData({...formData, stueckzahl: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    min="1"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Haltbarkeitsdatum
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.haltbarkeitsdatum}
+                    onChange={(e) => setFormData({...formData, haltbarkeitsdatum: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Bild URL
+                  </label>
+                  <input
+                    type="url"
+                    value={formData.image}
+                    onChange={(e) => setFormData({...formData, image: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="https://example.com/image.jpg"
+                  />
+                </div>
+                <div className="flex space-x-3">
+                  <button
+                    onClick={() => handleEditItem(formData._id)}
+                    className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    Speichern
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowEditForm(false);
+                      setCurrentItem(null);
+                      resetForm();
+                    }}
+                    className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition-colors"
+                  >
+                    Abbrechen
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
   )
 }
 
