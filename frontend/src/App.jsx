@@ -5,6 +5,7 @@ import {Link, BrowserRouter, Route, Routes, useNavigate} from "react-router"
 import CreatePage from "./pages/CreatePage";
 import HomePage from "./pages/HomePage"
 import ArtikelEditPage from './pages/ArtikelEditPage';
+import ArtikelDetailPage from './pages/ArtikelDetailPage';
 
 const InventoryApp = () => {
   const [items, setItems] = useState([])
@@ -201,6 +202,7 @@ const InventoryApp = () => {
           <Route path="/" element={<HomePage/>} />
           <Route path="/create" element={<CreatePage/>} />
           <Route path="/edit/:id" element={<ArtikelEditPage/>}/>
+          <Route path="/artikel/:id" element={<ArtikelDetailPage/>}/>
         </Routes>
       
       <div className="max-w-6xl mx-auto">

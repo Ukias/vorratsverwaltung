@@ -231,12 +231,13 @@ const HomePage = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex space-x-2">
+                        <Link to={`artikel/${item._id}`}>
                         <button
-                          onClick={() => openDetailView(item)}
                           className="text-blue-600 hover:text-blue-800 p-1 hover:bg-blue-50 rounded"
                         >
                           <Eye className="h-4 w-4" />
                         </button>
+                        </Link>
                         <Link to={`edit/${item._id}`}>
                         <button
                           className="text-green-600 hover:text-green-800 p-1 hover:bg-green-50 rounded"
