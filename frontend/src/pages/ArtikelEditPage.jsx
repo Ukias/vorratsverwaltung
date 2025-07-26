@@ -1,6 +1,7 @@
 import React, { useState, useEffect} from 'react';
 import {useNavigate, useParams} from "react-router"
 import api from "../lib/axios";
+import {Link} from "react-router"
 
 const ArtikelEditPage = () => {
     const [formData, setFormData] = useState({
@@ -113,6 +114,7 @@ const ArtikelEditPage = () => {
                   >
                     Speichern
                   </button>
+                  <Link to={{pathname: "/"}}>
                   <button
                     onClick={() => {
                       setShowEditForm(false);
@@ -123,6 +125,7 @@ const ArtikelEditPage = () => {
                   >
                     Abbrechen
                   </button>
+                  </Link>
                 </div>
               </div>
             </div>
