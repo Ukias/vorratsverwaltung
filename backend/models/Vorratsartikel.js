@@ -28,6 +28,10 @@ const vorratsartikelSchema = new mongoose.Schema({
   aktualisiertAm: {
     type: Date,
     default: Date.now
+  }, 
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
   }
 });
 
