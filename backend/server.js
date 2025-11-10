@@ -88,17 +88,17 @@ app.delete('/api/vorratsartikel/:id', deleteVorratsartikel);
 app.get('/api/statistiken', getStatistiken);
 
 // POST - Login 
-app.post('/login', login);
+app.post('/api/login', login);
 
 // POST - Logout
-app.post('/logout', (req, res) => {
+app.post('/api/logout', (req, res) => {
   // console.log('logout is called')
   res.clearCookie('token'); // Falls JWT in Cookies gespeichert ist
   res.status(200).json({ message: 'Erfolgreich abgemeldet' });
 });
 
 // POST - registration
-app.post('/registration', register);
+app.post('/api/registration', register);
 
 // Error Handler
 app.use((error, req, res, next) => {
