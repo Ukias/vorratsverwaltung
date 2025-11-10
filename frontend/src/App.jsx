@@ -6,6 +6,10 @@ import CreatePage from "./pages/CreatePage";
 import HomePage from "./pages/HomePage"
 import ArtikelEditPage from './pages/ArtikelEditPage';
 import ArtikelDetailPage from './pages/ArtikelDetailPage';
+import Root from './components/Root'
+import Login from './pages/Login'
+import Registration from './pages/Registration'
+import ProtectedRoutes from './lib/ProtectedRoutes'
 
 const InventoryApp = () => {
   const [items, setItems] = useState([])
@@ -203,6 +207,9 @@ const InventoryApp = () => {
           <Route path="/create" element={<CreatePage/>} />
           <Route path="/edit/:id" element={<ArtikelEditPage/>}/>
           <Route path="/artikel/:id" element={<ArtikelDetailPage/>}/>
+          <Route path="/login" element={<Login/>} />
+          <Route path="/registration" element={<Registration/>} />
+          <Route path="/unauthorized" element={<p className='font-bold text-3xl mt-20 ml-20'>Unauthorized</p>}/>          
         </Routes>
       
       <div className="max-w-6xl mx-auto">
