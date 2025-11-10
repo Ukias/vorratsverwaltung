@@ -12,6 +12,7 @@ import { getAllVorratsartikel, getVorratsartikelById, createVorratsartikel, upda
   deleteVorratsartikel, getStatistiken
  } from './controllers/vorratsController.js';
 import {login} from './controllers/authController.js'
+import {register} from './controllers/registrationController.js'
 dotenv.config();
 
 const app = express();
@@ -95,6 +96,9 @@ app.post('/logout', (req, res) => {
   res.clearCookie('token'); // Falls JWT in Cookies gespeichert ist
   res.status(200).json({ message: 'Erfolgreich abgemeldet' });
 });
+
+// POST - registration
+app.post('/registration', register);
 
 // Error Handler
 app.use((error, req, res, next) => {
