@@ -30,11 +30,13 @@ const CreatePage = () => {
         haltbarkeitsdatum: formData.haltbarkeitsdatum || null,
         image: formData.image || 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&h=300&fit=crop'
       };
+      const token = localStorage.getItem('token');
       // setItems([...items, newItem]);
       // save article in database
       try {
         await api.post("/vorratsartikel",newItem, {
           headers: {
+            'Authorization': `Bearer ${token}`, // Nur Token senden
             'Content-Type': 'application/json'
           }
         })

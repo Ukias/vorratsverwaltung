@@ -13,6 +13,7 @@ import { getAllVorratsartikel, getVorratsartikelById, createVorratsartikel, upda
  } from './controllers/vorratsController.js';
 import {login} from './controllers/authController.js'
 import {register} from './controllers/registrationController.js'
+import { authenticateToken } from './controllers/authController.js';
 dotenv.config();
 
 const app = express();
@@ -77,7 +78,7 @@ app.get('/api/vorratsartikel', getAllVorratsartikel);
 app.get('/api/vorratsartikel/:id', getVorratsartikelById);
 
 // POST - Neuen Vorratsartikel erstellen
-app.post('/api/vorratsartikel', upload.single('bild'), createVorratsartikel);
+app.post('/api/vorratsartikel', authenticateToken, upload.single('bild'), createVorratsartikel);
 
 // PUT - Vorratsartikel bearbeiten
 app.put('/api/vorratsartikel/:id', upload.single('bild'), updateVorratsartikel);

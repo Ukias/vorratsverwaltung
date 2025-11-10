@@ -50,12 +50,14 @@ export async function createVorratsartikel(req, res) {
         if (!name || !stueckzahl) {
           return res.status(400).json({ message: 'Name und Stückzahl sind erforderlich' });
         }
+        console.log("user id: ",req.user.id)
     
         const artikelData = {
           name: name.trim(),
           stueckzahl: parseInt(stueckzahl),
           haltbarkeitsdatum: haltbarkeitsdatum ? new Date(haltbarkeitsdatum) : null,
-          bild: req.file ? req.file.filename : null
+          bild: req.file ? req.file.filename : null,
+          userId: req.user.id
         };
     
         const neuerArtikel = new Vorratsartikel(artikelData);
