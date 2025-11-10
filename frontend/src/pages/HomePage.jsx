@@ -13,7 +13,13 @@ const HomePage = () => {
   useEffect(() => {
     const fetchVorratsartikel = async () => {
       try {
-        const res = await api.get("/vorratsartikel")
+        const token = localStorage.getItem('token');
+        const res = await api.get("/vorratsartikelUser", {
+          headers: {
+            'Authorization': `Bearer ${token}`, // Nur Token senden
+            'Content-Type': 'application/json'
+          }
+        })
         // console.log(res.data);
         setItems(res.data);
         // setIsRateLimited(false);

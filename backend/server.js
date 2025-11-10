@@ -9,7 +9,7 @@ import path from "path";
 import fs from "fs";
 import dotenv from 'dotenv';
 import { getAllVorratsartikel, getVorratsartikelById, createVorratsartikel, updateVorratsartikel,
-  deleteVorratsartikel, getStatistiken
+  deleteVorratsartikel, getVorratsartikelByUser, getStatistiken
  } from './controllers/vorratsController.js';
 import {login} from './controllers/authController.js'
 import {register} from './controllers/registrationController.js'
@@ -85,6 +85,9 @@ app.put('/api/vorratsartikel/:id', upload.single('bild'), updateVorratsartikel);
 
 // DELETE - Vorratsartikel löschen
 app.delete('/api/vorratsartikel/:id', deleteVorratsartikel);
+
+// GET - Vorratsartikel eines Users abrufen
+app.get('/api/vorratsartikelUser', authenticateToken, getVorratsartikelByUser);
 
 // GET - Statistiken abrufen
 app.get('/api/statistiken', getStatistiken);

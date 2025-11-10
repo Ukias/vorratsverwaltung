@@ -73,6 +73,19 @@ export async function createVorratsartikel(req, res) {
       }
 }
 
+export async function getVorratsartikelByUser (req, res) {
+    try {      
+      const userVorratsartikel = await Vorratsartikel.find({ userId: req.user.id });
+      // console.log('User ID:', req.user.id); // Debug
+      // console.log('Posts: ', userPosts) // Debug
+      // console.log('Found posts:', userPosts.length); // Debug
+      
+      res.json(userVorratsartikel);
+  } catch (error) {
+      res.status(500).json({ error: error.message });
+  }
+}
+
 export async function updateVorratsartikel(req, res) {
       try {
         const { name, stueckzahl, haltbarkeitsdatum } = req.body;
