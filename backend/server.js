@@ -1,8 +1,6 @@
 // server.js
 
-import { getAllVorratsartikel, getVorratsartikelById, createVorratsartikel, updateVorratsartikel,
-  deleteVorratsartikel, getStatistiken
- } from './controllers/vorratsController.js';
+
 import express from "express";
 import mongoose from 'mongoose';
 import cors from "cors";
@@ -10,6 +8,10 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import dotenv from 'dotenv';
+import { getAllVorratsartikel, getVorratsartikelById, createVorratsartikel, updateVorratsartikel,
+  deleteVorratsartikel, getStatistiken
+ } from './controllers/vorratsController.js';
+import {login} from './controllers/authController.js'
 dotenv.config();
 
 const app = express();
@@ -83,6 +85,16 @@ app.delete('/api/vorratsartikel/:id', deleteVorratsartikel);
 
 // GET - Statistiken abrufen
 app.get('/api/statistiken', getStatistiken);
+
+// POST - Login 
+app.post('/login', login);
+
+// POST - Logout
+app.post('/logout', (req, res) => {
+  // console.log('logout is called')
+  res.clearCookie('token'); // Falls JWT in Cookies gespeichert ist
+  res.status(200).json({ message: 'Erfolgreich abgemeldet' });
+});
 
 // Error Handler
 app.use((error, req, res, next) => {
