@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, Eye, Search, ArrowUpDown, Package, Calendar, Hash } from 'lucide-react';
 import {Link} from "react-router"
 import api from "../lib/axios";
+import LogoutButton from '../components/LogoutButton'
 
 const HomePage = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -116,6 +117,7 @@ const HomePage = () => {
 
   return (
     <>
+        <LogoutButton/>
         {/* Header */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <div className="flex justify-between items-center">
