@@ -53,16 +53,17 @@ const Login = () => {
 
     return(
         <div className="login-container">
-            <h1>Login</h1>
+            <h1 className="text-4xl dark:text-white max-w-sm mx-auto my-7">Login</h1>
             {error && (
                 <div className="bg-red-200 text-red-700 p-2 mb-4 rounded">
                     {error}
                 </div>
             )}
-            <form className="login-form" onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <label htmlFor="email">Email</label>
+            <form className="max-w-sm mx-auto" onSubmit={handleSubmit}>
+                <div className="mb-5">
+                    <label htmlFor="email" className="block mb-2.5 text-sm font-medium text-heading">Email</label>
                     <input 
+                        className="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
                         type="text"
                         id="email"
                         name="email"
@@ -70,9 +71,10 @@ const Login = () => {
                         placeholder="Enter Email"
                         required />
                 </div>
-                <div className="form-group">
-                    <label htmlFor="password">Password</label>
+                <div className="mb-5">
+                    <label htmlFor="password" className="block mb-2.5 text-sm font-medium text-heading">Password</label>
                     <input 
+                        className="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
                         type="password"
                         id="password"
                         name="password"
@@ -80,7 +82,7 @@ const Login = () => {
                         placeholder="Enter password"
                         required />
                 </div>
-                <button type="submit">
+                <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                     {loading ? "Loading..." : "Login"}
                 </button>
             </form>
