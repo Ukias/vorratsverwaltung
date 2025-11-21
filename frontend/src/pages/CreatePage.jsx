@@ -50,6 +50,12 @@ const CreatePage = () => {
         navigate("/")
       } catch(error) {
         console.log("Error creating vorratsartikel", error)
+        if(error.response.status === 429) {
+          toast.error("Mach langsam. Du erstellst zu viele Vorratsartikel in zu kurzer Zeit", {
+            duration:4000,
+            icon:"no"
+          });
+        }        
       }
       resetForm();
     }

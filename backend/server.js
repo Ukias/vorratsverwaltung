@@ -14,6 +14,7 @@ import { getAllVorratsartikel, getVorratsartikelById, createVorratsartikel, upda
 import {login} from './controllers/authController.js'
 import {register} from './controllers/registrationController.js'
 import { authenticateToken } from './controllers/authController.js';
+import rateLimiter from "./middleware/rateLimiter.js"
 dotenv.config();
 
 const app = express();
@@ -25,7 +26,13 @@ app.use(cors({
   origin: 'http://localhost:5173', // Ihre Frontend-URL
   credentials: true
 }));
+// middleware
 app.use(express.json());
+app.use(rateLimiter)
+// app.use((req, res,next) => {
+//   console.log("We just got a new req")
+//   next();
+// });
 app.use('/uploads', express.static('uploads'));
 
 
