@@ -2,6 +2,7 @@ import React, { useState, useEffect} from 'react';
 import {useNavigate, useParams} from "react-router"
 import api from "../lib/axios";
 import {Link} from "react-router"
+import toast from "react-hot-toast";
 
 const ArtikelEditPage = () => {
     const [formData, setFormData] = useState({
@@ -38,9 +39,13 @@ const ArtikelEditPage = () => {
     };
 
     const handleEditItem = async (id) => {
+        if (!formData.name || !formData.stueckzahl) {
+          toast.error("Name und Stückzahl müssen ausgefüllt werden");
+        }
         if (formData.name && formData.stueckzahl) {
         try {
             await api.put(`/vorratsartikel/${id}`, formData)
+            toast.success("Artikel erfolgreich bearbeitet")
         } catch(error) {
             console.log("Error saving the note", error)
         }
