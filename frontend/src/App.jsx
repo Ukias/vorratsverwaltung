@@ -10,6 +10,7 @@ import Root from './components/Root'
 import Login from './pages/Login'
 import Registration from './pages/Registration'
 import ProtectedRoutes from './lib/ProtectedRoutes'
+import { Toaster } from 'react-hot-toast';
 
 const InventoryApp = () => {
   const [items, setItems] = useState([])
@@ -201,6 +202,7 @@ const InventoryApp = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
+      <Toaster />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<HomePage/>} />

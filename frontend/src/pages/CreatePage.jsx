@@ -2,6 +2,7 @@ import React from 'react'
 import {useNavigate} from "react-router"
 import {useState} from "react"
 import api from "../lib/axios";
+import toast, { Toaster } from "react-hot-toast"
 
 const CreatePage = () => {
   const [formData, setFormData] = useState({
@@ -21,7 +22,12 @@ const CreatePage = () => {
     });
   };
 
-  const handleAddItem = async() => {
+  const handleAddItem = async(e) => {
+    e.preventDefault();
+    if (!formData.name || !formData.stueckzahl) {
+      toast.error("Name und Stückzahl müssen ausgefüllt werden");
+      return;
+    }    
     if (formData.name && formData.stueckzahl) {
       const newItem = {
         id: Date.now(),
@@ -40,12 +46,14 @@ const CreatePage = () => {
             'Content-Type': 'application/json'
           }
         })
+        toast.success("Artikel erfolgreich erstellt!");
         navigate("/")
       } catch(error) {
         console.log("Error creating vorratsartikel", error)
       }
       resetForm();
     }
+
   };
 
   return (
