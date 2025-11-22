@@ -17,8 +17,8 @@ const LogoutButton = () => {
 
             if (response.ok) {
                 // Lokalen Storage bereinigen (falls JWT im localStorage gespeichert ist)
-                localStorage.removeItem('token');
-                localStorage.removeItem('user');
+                localStorage.removeItem('pos-token');
+                localStorage.removeItem('pos-user');
                 
                 // Zur Login-Seite weiterleiten
                 navigate('/login');

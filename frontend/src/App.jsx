@@ -205,10 +205,10 @@ const InventoryApp = () => {
       <Toaster />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<HomePage/>} />
-          <Route path="/create" element={<CreatePage/>} />
-          <Route path="/edit/:id" element={<ArtikelEditPage/>}/>
-          <Route path="/artikel/:id" element={<ArtikelDetailPage/>}/>
+          <Route path="/" element={<ProtectedRoutes requiredRole={["customer"]}><HomePage/></ProtectedRoutes>} />
+          <Route path="/create" element={<ProtectedRoutes requiredRole={["customer"]}><CreatePage/></ProtectedRoutes>} />
+          <Route path="/edit/:id" element={<ProtectedRoutes requiredRole={["customer"]}><ArtikelEditPage/></ProtectedRoutes>}/>
+          <Route path="/artikel/:id" element={<ProtectedRoutes requiredRole={["customer"]}><ArtikelDetailPage/></ProtectedRoutes>}/>
           <Route path="/login" element={<Login/>} />
           <Route path="/registration" element={<Registration/>} />
           <Route path="/unauthorized" element={<p className='font-bold text-3xl mt-20 ml-20'>Unauthorized</p>}/>          
