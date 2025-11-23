@@ -19,13 +19,16 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const __dirname = path.resolve()
 
 // Middleware
 // app.use(cors());
-app.use(cors({
-  origin: 'http://localhost:5173', // Ihre Frontend-URL
-  credentials: true
-}));
+if(process.env.NODE_ENV !== "production") {
+  app.use(cors({
+    origin: 'http://localhost:5173', // Ihre Frontend-URL
+    credentials: true
+  }));
+}
 // middleware
 app.use(express.json());
 app.use(rateLimiter)
@@ -35,6 +38,13 @@ app.use(rateLimiter)
 // });
 app.use('/uploads', express.static('uploads'));
 
+if(process.env.NODE_ENV === "production"){
+  app.use(express.static(path.join(__dirname, "../frontend/dist")))
+
+  app.get("*",(req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend", "dist","index.html"))
+  })
+}
 
 // MongoDB Connection
 try {
