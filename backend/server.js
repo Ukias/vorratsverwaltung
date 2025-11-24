@@ -38,14 +38,6 @@ app.use(rateLimiter)
 // });
 app.use('/uploads', express.static('uploads'));
 
-if(process.env.NODE_ENV === "production"){
-  app.use(express.static(path.join(__dirname, "../frontend/dist")))
-
-  app.get("*",(req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend", "dist","index.html"))
-  })
-}
-
 // MongoDB Connection
 try {
   await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/vorratsverwaltung', {
@@ -131,6 +123,14 @@ app.use((error, req, res, next) => {
   }
   res.status(500).json({ message: error.message });
 });
+
+if(process.env.NODE_ENV === "production"){
+  app.use(express.static(path.join(__dirname, "../frontend/dist")))
+
+  app.get("*",(req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend", "dist","index.html"))
+  })
+}
 
 // 404 Handler
 app.use((req, res) => {
