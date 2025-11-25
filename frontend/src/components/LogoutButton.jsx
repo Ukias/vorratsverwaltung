@@ -10,6 +10,7 @@ const LogoutButton = () => {
         try {     
             // API-Aufruf zum Backend, um den Benutzer auszuloggen
             const response = await api.post('/logout', {
+                credentials: 'include',
                 headers: {
                     'Authorization': `Bearer ${token}`, // Nur Token senden
                     'Content-Type': 'application/json'
