@@ -1,18 +1,19 @@
 import React from 'react'
 import {useNavigate} from "react-router"
+import api from "../lib/axios";
 
 const LogoutButton = () => {
     const navigate = useNavigate();
+    const token = localStorage.getItem('token');
 
     const handleLogout = async () => {
         try {     
             // API-Aufruf zum Backend, um den Benutzer auszuloggen
-            const response = await fetch('http://localhost:5000/api/logout', {
-                method: 'POST',
-                credentials: 'include', // Wichtig für Cookies
+            const response = await api.post('/logout', {
                 headers: {
-                'Content-Type': 'application/json',
-                },
+                    'Authorization': `Bearer ${token}`, // Nur Token senden
+                    'Content-Type': 'application/json'
+                }
             });  
 
             if (response.ok) {
