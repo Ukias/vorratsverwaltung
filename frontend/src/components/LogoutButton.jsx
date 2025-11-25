@@ -9,15 +9,15 @@ const LogoutButton = () => {
     const handleLogout = async () => {
         try {     
             // API-Aufruf zum Backend, um den Benutzer auszuloggen
-            const response = await api.post('/logout', {
-                credentials: 'include',
+            const response = await api.post('/logout', {}, {
+                withCredentials: true,
                 headers: {
                     'Authorization': `Bearer ${token}`, // Nur Token senden
                     'Content-Type': 'application/json'
                 }
             });  
 
-            if (response.ok) {
+            if (response.status === 200) {
                 // Lokalen Storage bereinigen (falls JWT im localStorage gespeichert ist)
                 localStorage.removeItem('pos-token');
                 localStorage.removeItem('pos-user');
