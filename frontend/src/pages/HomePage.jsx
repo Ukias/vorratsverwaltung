@@ -90,6 +90,9 @@ const HomePage = () => {
 
 
   const handleDeleteItem = async (id) => {
+    if(!window.confirm("Sind Sie sicher, dass Sie diesen Artikel löschen möchten?")) {
+      return;
+    }
     try {
       await api.delete(`/vorratsartikel/${id}`)
       setItems(items.filter(item => item._id !== id));
