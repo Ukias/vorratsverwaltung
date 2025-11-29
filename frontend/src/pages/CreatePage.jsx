@@ -1,6 +1,7 @@
 import React from 'react'
 import {useNavigate} from "react-router"
-import {useState} from "react"
+import {useState, useEffect} from "react"
+import {Link} from "react-router"
 import api from "../lib/axios";
 import toast, { Toaster } from "react-hot-toast"
 
@@ -9,18 +10,46 @@ const CreatePage = () => {
     name: '',
     stueckzahl: '',
     haltbarkeitsdatum: '',
+    kategorie: '',
     image: ''
   });
   const navigate = useNavigate()
+  const [kategorien, setKategorien] = useState([]);
 
-    const resetForm = () => {
+  const resetForm = () => {
     setFormData({
       name: '',
       stueckzahl: '',
       haltbarkeitsdatum: '',
+      kategorie: '',
       image: ''
     });
   };
+
+  useEffect(() => {
+      const fetchKategorien = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const res = await api.get("/kategorienUser", {
+            headers: {
+                'Authorization': `Bearer ${token}`, // Nur Token senden
+                'Content-Type': 'application/json'
+              }
+            })
+            setKategorien(res.data);
+            // setIsRateLimited(false);
+        } catch(error) {
+            console.log("Error fetching categories");
+            console.log(error);
+            // if(error.response?.status === 429) {
+            //   setIsRateLimited(true);
+            // } else {
+            //   toast.error("Failed to load notes.")
+            // } 
+        } 
+      };
+      fetchKategorien();
+  },[]);
 
   const handleAddItem = async(e) => {
     e.preventDefault();
@@ -34,6 +63,7 @@ const CreatePage = () => {
         name: formData.name,
         stueckzahl: parseInt(formData.stueckzahl),
         haltbarkeitsdatum: formData.haltbarkeitsdatum || null,
+        kategorie: formData.kategorie,
         image: formData.image || 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&h=300&fit=crop'
       };
       const token = localStorage.getItem('token');
@@ -101,6 +131,18 @@ const CreatePage = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Kategorie
+                  </label>
+                  <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          onChange={(e) => setFormData({...formData, kategorie: e.target.value})}>
+                    <option val=""></option>
+                    {kategorien.map((kategorie) => 
+                      <option val={kategorie.name}>{kategorie.name}</option>
+                    )}
+                  </select>                  
+                </div>
                 <div className="flex space-x-3">
                   <button
                     onClick={handleAddItem}
@@ -108,6 +150,7 @@ const CreatePage = () => {
                   >
                     Hinzufügen
                   </button>
+                  <Link to={"/"}>
                   <button
                     onClick={() => {
                       resetForm();
@@ -116,6 +159,7 @@ const CreatePage = () => {
                   >
                     Abbrechen
                   </button>
+                  </Link>
                 </div>
               </div>
             </div>

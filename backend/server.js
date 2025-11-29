@@ -11,6 +11,7 @@ import dotenv from 'dotenv';
 import { getAllVorratsartikel, getVorratsartikelById, createVorratsartikel, updateVorratsartikel,
   deleteVorratsartikel, getVorratsartikelByUser, getStatistiken
  } from './controllers/vorratsController.js';
+import { getKategorieById, getKategorienByUser, createKategorie, deleteKategorie, updateKategorie } from "./controllers/kategorieController.js";
 import {login} from './controllers/authController.js'
 import {register} from './controllers/registrationController.js'
 import { authenticateToken } from './controllers/authController.js';
@@ -97,6 +98,21 @@ app.delete('/api/vorratsartikel/:id', deleteVorratsartikel);
 
 // GET - Vorratsartikel eines Users abrufen
 app.get('/api/vorratsartikelUser', authenticateToken, getVorratsartikelByUser);
+
+// GET - Kategorien eines Users abrufen
+app.get('/api/kategorienUser', authenticateToken, getKategorienByUser);
+
+// GET - Einzelne Kategorie abrufen
+app.get('api/kategorie/:id', getKategorieById);
+
+// PUT - Kategorie bearbeiten
+app.put('/api/kategorie/:id', updateKategorie);
+
+// DELETE - Kategorie löschen
+app.delete('/api/kategorie/:id', deleteKategorie);
+
+// POST - Kategorie erstellen
+app.post('/api/kategorie', authenticateToken, createKategorie);
 
 // GET - Statistiken abrufen
 app.get('/api/statistiken', getStatistiken);

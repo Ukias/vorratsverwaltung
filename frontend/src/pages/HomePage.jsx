@@ -134,14 +134,23 @@ const HomePage = () => {
               <Package className="h-8 w-8 text-blue-600" />
               <h1 className="text-3xl font-bold text-gray-800">Vorratsverwaltung</h1>
             </div>
-            <Link to={"/create"}>
-            <button
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
-            >
-              <Plus className="h-5 w-5" />
-              <span>Artikel hinzufügen</span>
-            </button>
-            </Link>
+            <div className="flex gap-2">
+              <Link to={"/kategorien"}>
+                <button
+                  className="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+                >
+                  <span>Kategorien</span>
+                </button>
+              </Link>
+              <Link to={"/create"}>
+              <button
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+              >
+                <Plus className="h-5 w-5" />
+                <span>Artikel hinzufügen</span>
+              </button>
+              </Link>
+            </div>
           </div>
         </div>
 
@@ -209,6 +218,9 @@ const HomePage = () => {
                     Haltbarkeitsdatum
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Kategorie
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Aktionen
                   </th>
                 </tr>
@@ -239,6 +251,9 @@ const HomePage = () => {
                       }`}>
                         {formatDate(item.haltbarkeitsdatum)}
                       </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">{item.kategorie}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex space-x-2">

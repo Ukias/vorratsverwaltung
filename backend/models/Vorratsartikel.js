@@ -25,6 +25,9 @@ const vorratsartikelSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
+  kategorie: {
+    type: String
+  },
   aktualisiertAm: {
     type: Date,
     default: Date.now
