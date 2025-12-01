@@ -8,6 +8,7 @@ import ArtikelEditPage from './pages/ArtikelEditPage';
 import ArtikelDetailPage from './pages/ArtikelDetailPage';
 import Kategoriemanagement from './pages/Kategoriemanagement';
 import CreateKategorie from './pages/CreateKategorie';
+import KategorieEditPage from './pages/KategorieEditPage';
 import Root from './components/Root'
 import Login from './pages/Login'
 import Registration from './pages/Registration'
@@ -213,6 +214,7 @@ const InventoryApp = () => {
           <Route path="/artikel/:id" element={<ProtectedRoutes requiredRole={["customer"]}><ArtikelDetailPage/></ProtectedRoutes>}/>
           <Route path="/kategorien" element={<ProtectedRoutes requiredRole={["customer"]}><Kategoriemanagement/></ProtectedRoutes>}/>
           <Route path="/createKategorie" element={<ProtectedRoutes requiredRole={["customer"]}><CreateKategorie/></ProtectedRoutes>}/>
+          <Route path="/editKategorie/:id" element={<ProtectedRoutes requiredRole={["customer"]}><KategorieEditPage/></ProtectedRoutes>}/>
           <Route path="/login" element={<Login/>} />
           <Route path="/registration" element={<Registration/>} />
           <Route path="/unauthorized" element={<p className='font-bold text-3xl mt-20 ml-20'>Unauthorized</p>}/>          

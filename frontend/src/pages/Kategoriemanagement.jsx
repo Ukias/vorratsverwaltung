@@ -203,7 +203,7 @@ const Kategoriemanagement = () => {
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div className="flex space-x-2">
-                                        <Link to={`editKategorie/${item._id}`}>
+                                        <Link to={`/editKategorie/${item._id}`}>
                                             <button
                                             className="text-green-600 hover:text-green-800 p-1 hover:bg-green-50 rounded"
                                             >  

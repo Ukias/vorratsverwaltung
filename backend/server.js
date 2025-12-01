@@ -103,7 +103,7 @@ app.get('/api/vorratsartikelUser', authenticateToken, getVorratsartikelByUser);
 app.get('/api/kategorienUser', authenticateToken, getKategorienByUser);
 
 // GET - Einzelne Kategorie abrufen
-app.get('api/kategorie/:id', getKategorieById);
+app.get('/api/kategorie/:id', getKategorieById);
 
 // PUT - Kategorie bearbeiten
 app.put('/api/kategorie/:id', updateKategorie);
