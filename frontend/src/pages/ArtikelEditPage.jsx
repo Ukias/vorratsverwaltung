@@ -130,6 +130,7 @@ const ArtikelEditPage = () => {
                     Kategorie
                   </label>
                   <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          value={formData.kategorie}
                           onChange={(e) => setFormData({...formData, kategorie: e.target.value})}>
                     <option val=""></option>
                     {kategorien.map((kategorie) => 
