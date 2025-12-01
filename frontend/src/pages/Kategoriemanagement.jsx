@@ -97,11 +97,25 @@ const Kategoriemanagement = () => {
     };  
     
     const handleDeleteKategorie = async (id) => {
-        if(!window.confirm("Sind Sie sicher, dass Sie diese Kategorie löschen möchten?")) {
+        if(!window.confirm("Sind Sie sicher, dass Sie diese Kategorie löschen möchten? Beachten Sie, dass alle Artikel mit dieser Kategorie anschließend kategorielos sind.")) {
             return;
         }
         try {
-            await api.delete(`/vorratsartikel/${id}`)
+            const res = await api.get(`/kategorie/${id}`)
+            const oldName = res.data.name;
+            await api.delete(`/kategorie/${id}`)
+            // delete Kategorie for all articles with this Kategorie
+            for(let i=0; i<vorratsartikel.length; i++) {
+                if(vorratsartikel[i].kategorie === oldName) {
+                    const newItem = {
+                        name:vorratsartikel[i].name,
+                        stueckzahl: vorratsartikel[i].stueckzahl,
+                        haltbarkeitsdatum: vorratsartikel[i].haltbarkeitsdatum,
+                        kategorie: ''
+                    }
+                    await api.put(`/vorratsartikel/${vorratsartikel[i]._id}`, newItem)
+                }
+            }
             setKategorien(kategorien.filter(item => item._id !== id));
         } catch(error) {
             console.log("Error in handleDelete", error)
@@ -211,7 +225,7 @@ const Kategoriemanagement = () => {
                                             </button>
                                         </Link>
                                         <button
-                                            onClick={() => handleDeleteItem(item._id)}
+                                            onClick={() => handleDeleteKategorie(item._id)}
                                             className="text-red-600 hover:text-red-800 p-1 hover:bg-red-50 rounded"
                                         >
                                             <Trash2 className="h-4 w-4" />
