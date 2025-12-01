@@ -7,19 +7,13 @@ import toast, { Toaster } from "react-hot-toast"
 
 const CreateKategorie = () => {
   const [formData, setFormData] = useState({
-    name: '',
-    stueckzahl: '',
-    haltbarkeitsdatum: '',
-    image: ''
+    name: ''
   });
   const navigate = useNavigate()
 
     const resetForm = () => {
     setFormData({
-      name: '',
-      stueckzahl: '',
-      haltbarkeitsdatum: '',
-      image: ''
+      name: ''
     });
   };
 
