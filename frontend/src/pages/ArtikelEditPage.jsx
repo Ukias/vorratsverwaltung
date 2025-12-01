@@ -9,10 +9,12 @@ const ArtikelEditPage = () => {
         name: '',
         stueckzahl: '',
         haltbarkeitsdatum: '',
+        kategorie: '',
         image: ''
       });
       const [showEditForm, setShowEditForm] = useState(false);
       const [currentItem, setCurrentItem] = useState(null);
+      const [kategorien, setKategorien] = useState([]);
       const {id} = useParams();
       const navigate = useNavigate()
 
@@ -25,7 +27,29 @@ const ArtikelEditPage = () => {
                 console.log("Error in fetching artikel", error)
             }
         };
+        const fetchKategorien = async () => {
+          try {
+              const token = localStorage.getItem('token');
+              const res = await api.get("/kategorienUser", {
+              headers: {
+                  'Authorization': `Bearer ${token}`, // Nur Token senden
+                  'Content-Type': 'application/json'
+                }
+              })
+              setKategorien(res.data);
+              // setIsRateLimited(false);
+          } catch(error) {
+              console.log("Error fetching categories");
+              console.log(error);
+              // if(error.response?.status === 429) {
+              //   setIsRateLimited(true);
+              // } else {
+              //   toast.error("Failed to load notes.")
+              // } 
+          } 
+        };  
 
+        fetchKategorien();
         fetchArtikel();
     }, [id]);
 
@@ -34,6 +58,7 @@ const ArtikelEditPage = () => {
             name: '',
             stueckzahl: '',
             haltbarkeitsdatum: '',
+            kategorie: '',
             image: ''
         });
     };
@@ -100,6 +125,18 @@ const ArtikelEditPage = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Kategorie
+                  </label>
+                  <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          onChange={(e) => setFormData({...formData, kategorie: e.target.value})}>
+                    <option val=""></option>
+                    {kategorien.map((kategorie) => 
+                      <option val={kategorie.name}>{kategorie.name}</option>
+                    )}
+                  </select>                  
+                </div>                
                 <div className="flex space-x-3">
                   <button
                     onClick={() => handleEditItem(formData._id)}

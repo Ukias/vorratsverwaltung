@@ -89,7 +89,7 @@ export async function getVorratsartikelByUser (req, res) {
 
 export async function updateVorratsartikel(req, res) {
       try {
-        const { name, stueckzahl, haltbarkeitsdatum } = req.body;
+        const { name, stueckzahl, haltbarkeitsdatum, kategorie } = req.body;
         
         const artikel = await Vorratsartikel.findById(req.params.id);
         if (!artikel) {
@@ -111,6 +111,7 @@ export async function updateVorratsartikel(req, res) {
         if (haltbarkeitsdatum !== undefined) {
           updateData.haltbarkeitsdatum = haltbarkeitsdatum ? new Date(haltbarkeitsdatum) : null;
         }
+        if (kategorie) updateData.kategorie = kategorie.trim();
         if (req.file) updateData.bild = req.file.filename;
     
         const aktualisierterArtikel = await Vorratsartikel.findByIdAndUpdate(
