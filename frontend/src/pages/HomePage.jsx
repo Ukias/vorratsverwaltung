@@ -9,6 +9,8 @@ const HomePage = () => {
   const [sortBy, setSortBy] = useState('name');
   const [sortOrder, setSortOrder] = useState('asc');
   const [items, setItems] = useState([])
+  const [kategorien, setKategorien] = useState([]);
+  const [kategorieFilter, setKategorieFilter] = useState('Keine')
 
   useEffect(() => {
     const fetchVorratsartikel = async () => {
@@ -22,6 +24,14 @@ const HomePage = () => {
         })
         // console.log(res.data);
         setItems(res.data);
+        // fetch Kategorien
+        const res2 = await api.get("/kategorienUser", {
+        headers: {
+            'Authorization': `Bearer ${token}`, // Nur Token senden
+            'Content-Type': 'application/json'
+        }
+        })
+        setKategorien(res2.data);        
         // setIsRateLimited(false);
       } catch(error) {
         console.log("Error fetching notes");
@@ -41,7 +51,15 @@ const HomePage = () => {
   },[])
 
   const getSortedAndFilteredItems = () => {
-    let filtered = items.filter(item => 
+     
+    let filtered1 = items.filter(item => 
+        item.kategorie === kategorieFilter
+    )
+    if (kategorieFilter === "Keine") {
+      filtered1 = items
+    }
+
+    let filtered = filtered1.filter(item => 
       item.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
@@ -134,7 +152,14 @@ const HomePage = () => {
               <Package className="h-8 w-8 text-blue-600" />
               <h1 className="text-3xl font-bold text-gray-800">Vorratsverwaltung</h1>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-3 items-center">
+              <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      onChange={(e) => setKategorieFilter( e.target.value)}>
+                <option val="Keine">Keine</option>
+                {kategorien.map((kategorie) => 
+                  <option val={kategorie.name}>{kategorie.name}</option>
+                )}
+              </select>              
               <Link to={"/kategorien"}>
                 <button
                   className="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
@@ -144,7 +169,7 @@ const HomePage = () => {
               </Link>
               <Link to={"/create"}>
               <button
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2 whitespace-nowrap"
               >
                 <Plus className="h-5 w-5" />
                 <span>Artikel hinzufügen</span>
