@@ -12,6 +12,7 @@ import { getAllVorratsartikel, getVorratsartikelById, createVorratsartikel, upda
   deleteVorratsartikel, getVorratsartikelByUser, getStatistiken
  } from './controllers/vorratsController.js';
 import { getKategorieById, getKategorienByUser, createKategorie, deleteKategorie, updateKategorie } from "./controllers/kategorieController.js";
+import { scanKassenzettel } from "./controllers/kassenzettelController.js";
 import {login} from './controllers/authController.js'
 import {register} from './controllers/registrationController.js'
 import { authenticateToken } from './controllers/authController.js';
@@ -116,6 +117,20 @@ app.post('/api/kategorie', authenticateToken, createKategorie);
 
 // GET - Statistiken abrufen
 app.get('/api/statistiken', getStatistiken);
+
+// POST - Kassenzettel per Foto einlesen (Claude Vision)
+const uploadMemory = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Nur Bilddateien sind erlaubt!'), false);
+    }
+  }
+});
+app.post('/api/kassenzettel/scan', authenticateToken, uploadMemory.single('bild'), scanKassenzettel);
 
 // POST - Login 
 app.post('/api/login', login);

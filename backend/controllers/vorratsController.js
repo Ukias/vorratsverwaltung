@@ -45,7 +45,8 @@ export async function getVorratsartikelById(req, res) {
 export async function createVorratsartikel(req, res) {
       try {
         const { name, stueckzahl, haltbarkeitsdatum , kategorie} = req.body;
-        
+        // console.log("Name: ",name);
+        // console.log("Stückzahl: ", stueckzahl);
         // Validierung
         if (!name || !stueckzahl) {
           return res.status(400).json({ message: 'Name und Stückzahl sind erforderlich' });
@@ -57,10 +58,10 @@ export async function createVorratsartikel(req, res) {
           stueckzahl: parseInt(stueckzahl),
           haltbarkeitsdatum: haltbarkeitsdatum ? new Date(haltbarkeitsdatum) : null,
           bild: req.file ? req.file.filename : null,
-          kategorie: kategorie.trim(),
+          kategorie: kategorie ? kategorie.trim() : null,
           userId: req.user.id
         };
-    
+    	console.log("artikelData: ", artikelData);
         const neuerArtikel = new Vorratsartikel(artikelData);
         const gespeicherterArtikel = await neuerArtikel.save();
         

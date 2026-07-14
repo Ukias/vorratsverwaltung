@@ -1,0 +1,326 @@
+import React, { useState, useRef, useEffect } from 'react';
+import { Camera, Upload, ScanLine, Plus, X, ArrowLeft } from 'lucide-react';
+import { Link, useNavigate } from 'react-router';
+import api from '../lib/axios';
+import toast, { Toaster } from 'react-hot-toast';
+
+const KassenzettelScanPage = () => {
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [erkannteArtikel, setErkannteArtikel] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [cameraActive, setCameraActive] = useState(false);
+  const [stream, setStream] = useState(null);
+
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const fileInputRef = useRef(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    return () => {
+      if (stream) {
+        stream.getTracks().forEach((track) => track.stop());
+      }
+    };
+  }, [stream]);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+    setErkannteArtikel([]);
+    if (cameraActive) stopCamera();
+  };
+
+  const startCamera = async () => {
+    try {
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: 'environment' } },
+      });
+      setStream(mediaStream);
+      setCameraActive(true);
+      setImagePreview(null);
+      setImageFile(null);
+      setErkannteArtikel([]);
+      if (videoRef.current) {
+        videoRef.current.srcObject = mediaStream;
+      }
+    } catch (err) {
+      toast.error('Kamera konnte nicht gestartet werden: ' + err.message);
+    }
+  };
+
+  const stopCamera = () => {
+    if (stream) {
+      stream.getTracks().forEach((track) => track.stop());
+      setStream(null);
+    }
+    setCameraActive(false);
+  };
+
+  // Attach stream to video element once camera is active
+  useEffect(() => {
+    if (cameraActive && stream && videoRef.current) {
+      videoRef.current.srcObject = stream;
+    }
+  }, [cameraActive, stream]);
+
+  const capturePhoto = () => {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    if (!video || !canvas) return;
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+
+    canvas.toBlob((blob) => {
+      const file = new File([blob], 'kassenzettel.jpg', { type: 'image/jpeg' });
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(blob));
+      stopCamera();
+    }, 'image/jpeg', 0.95);
+  };
+
+  const handleScan = async () => {
+    if (!imageFile) {
+      toast.error('Bitte zuerst ein Bild auswählen oder aufnehmen.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const formData = new FormData();
+      formData.append('bild', imageFile);
+
+      const res = await api.post('/kassenzettel/scan', formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      setErkannteArtikel(res.data.artikel);
+      toast.success(`${res.data.artikel.length} Artikel erkannt`);
+    } catch (error) {
+      toast.error('Fehler beim Einlesen: ' + (error.response?.data?.message || error.message));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleArtikelChange = (index, field, value) => {
+    const updated = [...erkannteArtikel];
+    updated[index] = { ...updated[index], [field]: value };
+    setErkannteArtikel(updated);
+  };
+
+  const handleRemoveArtikel = (index) => {
+    setErkannteArtikel(erkannteArtikel.filter((_, i) => i !== index));
+  };
+
+  const handleAddAll = async () => {
+    const token = localStorage.getItem('token');
+    let successCount = 0;
+    let errorCount = 0;
+
+    for (const artikel of erkannteArtikel) {
+      if (!artikel.name || artikel.name.trim() === '') continue;
+      try {
+        await api.post(
+          '/vorratsartikel',
+          {
+            name: artikel.name.trim(),
+            stueckzahl: Number(artikel.stueckzahl) || 1,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+        successCount++;
+      } catch {
+        errorCount++;
+      }
+    }
+
+    if (successCount > 0) {
+      toast.success(`${successCount} Artikel hinzugefügt`);
+    }
+    if (errorCount > 0) {
+      toast.error(`${errorCount} Artikel konnten nicht hinzugefügt werden`);
+    }
+    if (successCount > 0) {
+      setTimeout(() => navigate('/'), 1200);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-4">
+      <Toaster />
+      <div className="max-w-2xl mx-auto">
+        {/* Header */}
+        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <div className="flex items-center gap-4">
+            <Link to="/">
+              <button className="text-gray-500 hover:text-gray-800 p-1 rounded hover:bg-gray-100">
+                <ArrowLeft className="h-5 w-5" />
+              </button>
+            </Link>
+            <div className="flex items-center gap-3">
+              <ScanLine className="h-7 w-7 text-green-600" />
+              <h1 className="text-2xl font-bold text-gray-800">Kassenzettel einlesen</h1>
+            </div>
+          </div>
+        </div>
+
+        {/* Image Source */}
+        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <h2 className="text-lg font-semibold text-gray-700 mb-4">Bild auswählen</h2>
+
+          <div className="flex gap-3 mb-5">
+            {/* File Upload */}
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="flex-1 flex flex-col items-center gap-2 border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-blue-400 hover:bg-blue-50 transition-colors cursor-pointer"
+            >
+              <Upload className="h-8 w-8 text-blue-500" />
+              <span className="text-sm font-medium text-gray-600">Datei auswählen</span>
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleFileChange}
+            />
+
+            {/* Camera Button */}
+            <button
+              onClick={cameraActive ? stopCamera : startCamera}
+              className={`flex-1 flex flex-col items-center gap-2 rounded-lg p-4 transition-colors cursor-pointer border-2 ${
+                cameraActive
+                  ? 'bg-red-500 border-red-500 text-white hover:bg-red-600'
+                  : 'border-dashed border-gray-300 hover:border-green-400 hover:bg-green-50'
+              }`}
+            >
+              <Camera className={`h-8 w-8 ${cameraActive ? 'text-white' : 'text-green-500'}`} />
+              <span className={`text-sm font-medium ${cameraActive ? 'text-white' : 'text-gray-600'}`}>
+                {cameraActive ? 'Kamera stoppen' : 'Kamera öffnen'}
+              </span>
+            </button>
+          </div>
+
+          {/* Camera View */}
+          {cameraActive && (
+            <div className="mb-4">
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                muted
+                className="w-full rounded-lg bg-black"
+                style={{ maxHeight: '350px', objectFit: 'contain' }}
+              />
+              <button
+                onClick={capturePhoto}
+                className="mt-3 w-full bg-green-600 text-white py-3 rounded-lg font-semibold text-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2 shadow-md"
+              >
+                <Camera className="h-6 w-6" />
+                Foto aufnehmen
+              </button>
+            </div>
+          )}
+          <canvas ref={canvasRef} className="hidden" />
+
+          {/* Image Preview */}
+          {imagePreview && !cameraActive && (
+            <div className="mb-4">
+              <img
+                src={imagePreview}
+                alt="Kassenzettel Vorschau"
+                className="w-full rounded-lg object-contain max-h-80 border border-gray-200"
+              />
+            </div>
+          )}
+
+          {/* Scan Button */}
+          <button
+            onClick={handleScan}
+            disabled={!imageFile || loading}
+            className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading ? (
+              <>
+                <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                Kassenzettel wird eingelesen...
+              </>
+            ) : (
+              <>
+                <ScanLine className="h-5 w-5" />
+                Kassenzettel einlesen
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* Erkannte Artikel */}
+        {erkannteArtikel.length > 0 && (
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-lg font-semibold text-gray-700 mb-4">
+              Erkannte Artikel ({erkannteArtikel.length})
+            </h2>
+
+            <div className="space-y-3 mb-6">
+              {erkannteArtikel.map((artikel, index) => (
+                <div
+                  key={index}
+                  className="border border-gray-200 rounded-lg p-3 flex gap-3 items-start"
+                >
+                  <div className="flex-1 space-y-2">
+                    <input
+                      type="text"
+                      value={artikel.name}
+                      onChange={(e) => handleArtikelChange(index, 'name', e.target.value)}
+                      placeholder="Artikelname"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                    <input
+                      type="number"
+                      value={artikel.stueckzahl}
+                      min="1"
+                      onChange={(e) => handleArtikelChange(index, 'stueckzahl', e.target.value)}
+                      placeholder="Stückzahl"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                  <button
+                    onClick={() => handleRemoveArtikel(index)}
+                    className="text-red-400 hover:text-red-600 p-1 hover:bg-red-50 rounded mt-1"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={handleAddAll}
+              className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+            >
+              <Plus className="h-5 w-5" />
+              Alle Artikel hinzufügen
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default KassenzettelScanPage;

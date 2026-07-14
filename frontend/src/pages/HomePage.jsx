@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, Eye, Search, ArrowUpDown, Package, Calendar, Hash } from 'lucide-react';
+import { Plus, Edit2, Trash2, Eye, Search, ArrowUpDown, Package, Calendar, Hash, ScanLine } from 'lucide-react';
 import {Link} from "react-router"
 import api from "../lib/axios";
 import LogoutButton from '../components/LogoutButton'
@@ -160,9 +160,17 @@ const HomePage = () => {
                   <option val={kategorie.name}>{kategorie.name}</option>
                 )}
               </select>              
+              <Link to={"/kassenzettel"}>
+                <button
+                  className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2 whitespace-nowrap"
+                >
+                  <ScanLine className="h-5 w-5" />
+                  <span>Kassenzettel</span>
+                </button>
+              </Link>
               <Link to={"/kategorien"}>
                 <button
-                  className="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+                  className="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition-colors flex items-center space-x-2"
                 >
                   <span>Kategorien</span>
                 </button>
