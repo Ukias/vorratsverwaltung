@@ -112,6 +112,11 @@ const KassenzettelScanPage = () => {
     }
   };
 
+  const entwicklungsScan = async () => {
+    const artikel = [{name : "Avocado Bio", stueckzahl : 3}, {name : "Milch Bio 1L", stueckzahl : 4}]
+    setErkannteArtikel(artikel)
+  }
+
   const handleArtikelChange = (index, field, value) => {
     const updated = [...erkannteArtikel];
     updated[index] = { ...updated[index], [field]: value };
@@ -266,6 +271,14 @@ const KassenzettelScanPage = () => {
                 Kassenzettel einlesen
               </>
             )}
+          </button>
+          <button 
+            onClick={entwicklungsScan}
+            className="w-full bg-yellow-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <>
+              Entwicklungstest
+            </>
           </button>
         </div>
 
