@@ -113,14 +113,36 @@ const KassenzettelScanPage = () => {
   };
 
   const entwicklungsScan = async () => {
-    const artikel = [{name : "Avocado Bio", stueckzahl : 3}, {name : "Milch Bio 1L", stueckzahl : 4}]
+    const artikel = [{name : "Avocado Bio", stueckzahl : 3, matches : [{name: "Avocado", stueckzahl: 3}, {name: "Avocado unreif", stueckzahl: 2}]},
+                     {name : "Milch Bio 1L", stueckzahl : 4, matches: [{name: "H-Milch 3,5%", stueckzahl: 1}, {name: "Vollmilch 3,5%", stueckzahl: 2}]}]
+    // füge artikel selber in die Liste der Matches hinzu
+    for (let i=0; i<artikel.length; i++) {
+      const newMatch = {name: artikel[i].name, stueckzahl: artikel[i].stueckzahl};
+      artikel[i].matches = [newMatch, ...artikel[i].matches];
+    }
     setErkannteArtikel(artikel)
+  }
+
+  const determineStueckzahlMatch = (matches, nameMatch) => {
+    for (let i=0; i < matches.length; i++) {
+      if (matches[i].name == nameMatch) {
+        return matches[i].stueckzahl;
+      }
+    }
   }
 
   const handleArtikelChange = (index, field, value) => {
     const updated = [...erkannteArtikel];
     updated[index] = { ...updated[index], [field]: value };
     setErkannteArtikel(updated);
+  };
+
+  const handleArtikelChangeNameUndStueckzahl = (index, artikelName, artikelStueckzahl) => {
+      const updated = [...erkannteArtikel];
+      const stueckzahl_alt = updated[index]["stueckzahl"];
+      // update name und stueckzahl
+      updated[index] = {...updated[index], name: artikelName, stueckzahl: artikelStueckzahl };
+      setErkannteArtikel(updated);
   };
 
   const handleRemoveArtikel = (index) => {
@@ -311,6 +333,17 @@ const KassenzettelScanPage = () => {
                       placeholder="Stückzahl"
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
+                    <select
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      // onChange={(e) => {handleArtikelChange(index, 'stueckzahl', artikel.stueckzahl + determineStueckzahlMatch(artikel.matches, e.target.value)); 
+                      //               handleArtikelChange(index, 'name', e.target.value);}}
+                      onChange = {(e) => handleArtikelChangeNameUndStueckzahl(index, e.target.value, determineStueckzahlMatch(artikel.matches, e.target.value))}
+                                 >
+                      {
+                        artikel.matches.map((match) => 
+                          <option val={match.name}>{match.name}</option>)
+                      }
+                    </select>
                   </div>
                   <button
                     onClick={() => handleRemoveArtikel(index)}
