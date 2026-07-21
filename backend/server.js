@@ -13,6 +13,7 @@ import { getAllVorratsartikel, getVorratsartikelById, createVorratsartikel, upda
  } from './controllers/vorratsController.js';
 import { getKategorieById, getKategorienByUser, createKategorie, deleteKategorie, updateKategorie } from "./controllers/kategorieController.js";
 import { scanKassenzettel } from "./controllers/kassenzettelController.js";
+import {fuzzyMatching} from "./controllers/fuzzyMatchingController.js";
 import {login} from './controllers/authController.js'
 import {register} from './controllers/registrationController.js'
 import { authenticateToken } from './controllers/authController.js';
@@ -114,6 +115,9 @@ app.delete('/api/kategorie/:id', deleteKategorie);
 
 // POST - Kategorie erstellen
 app.post('/api/kategorie', authenticateToken, createKategorie);
+
+// POST - Fuzzy-Matching für Artikel-Liste durchführen
+app.post('/api/artikel/fuzzy-matching', authenticateToken, fuzzyMatching);
 
 // GET - Statistiken abrufen
 app.get('/api/statistiken', getStatistiken);

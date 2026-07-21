@@ -121,6 +121,31 @@ const KassenzettelScanPage = () => {
       artikel[i].matches = [newMatch, ...artikel[i].matches];
     }
     setErkannteArtikel(artikel)
+    // modifiziere Liste, sodass artikel_post nur den Produkt-Namen und eine tempId enthält
+    let artikel_post = [];
+    for(let i=0; i<artikel.length; i++) {
+      const current_artikel = {tempId: i+1, name: artikel[i].name};
+      artikel_post = [...artikel_post, current_artikel];
+    }
+
+    // stelle Post-Anfrage an fuzzy-matching, um Matches der Artikel zu bestimmen
+    const token = localStorage.getItem('token');
+    try {
+      await api.post("/artikel/fuzzy-matching",artikel_post, {
+        headers: {
+          'Authorization': `Bearer ${token}`, // Nur Token senden
+          'Content-Type': 'application/json'
+        }
+      })
+    } catch(error) {
+      console.log("Error determining fuzzy matches", error)
+      if(error.response.status === 429) {
+        toast.error("Mach langsam. Du scanst zu viele Kassenzettel in zu kurzer Zeit!", {
+          duration:4000,
+          icon:"no"
+        });
+      }        
+    }
   }
 
   const determineStueckzahlMatch = (matches, nameMatch) => {
