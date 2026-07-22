@@ -2,52 +2,67 @@ import Fuse from 'fuse.js'
 import Vorratsartikel from "../models/Vorratsartikel.js";
 
 export async function fuzzyMatching(req, res) {
-    // get Artikel of user only
-    const artikelDB = await Vorratsartikel.find({ userId: req.user.id });
-    const artikelScan = req.body;
 
-    // entferne Mengen-, Volumen-, Gewichts-, Stück-, Prozentangaben mittels regulären Ausdrücken
-    for(let i=0; i<artikelScan.length; i++) {
-        const VOLUMEN_GEWICHT = /\d+[.,]?\d*\s?(g|kg|ml|l|L)\b/gi;
-        artikelScan[i]['name'] = artikelScan[i]['name'].replace(VOLUMEN_GEWICHT, " ");
+    try {
+        // get Artikel of user only
+        const artikelDB = await Vorratsartikel.find({ userId: req.user.id });
+        const artikelScan = req.body;
 
-        const MEHRFACHPACKUNGEN = /\d+\s?x\s?\d+[.,]?\d*\s?(g|kg|ml|l)?/gi;
-        artikelScan[i]['name'] = artikelScan[i]['name'].replace(MEHRFACHPACKUNGEN, " ");
+        // entferne Mengen-, Volumen-, Gewichts-, Stück-, Prozentangaben mittels regulären Ausdrücken
+        for(let i=0; i<artikelScan.length; i++) {
+            const VOLUMEN_GEWICHT = /\d+[.,]?\d*\s?(g|kg|ml|l|L)\b/gi;
+            artikelScan[i]['name'] = artikelScan[i]['name'].replace(VOLUMEN_GEWICHT, " ");
 
-        const XERPACKUNGEN = /\d+er(\s?Pack)?/gi;
-        artikelScan[i]['name'] = artikelScan[i]['name'].replace(XERPACKUNGEN, " ");
+            const MEHRFACHPACKUNGEN = /\d+\s?x\s?\d+[.,]?\d*\s?(g|kg|ml|l)?/gi;
+            artikelScan[i]['name'] = artikelScan[i]['name'].replace(MEHRFACHPACKUNGEN, " ");
 
-        const PROZENTANGABEN = /\d+[.,]?\d*\s?%/g;
-        artikelScan[i]['name'] = artikelScan[i]['name'].replace(PROZENTANGABEN, " ");
+            const XERPACKUNGEN = /\d+er(\s?Pack)?/gi;
+            artikelScan[i]['name'] = artikelScan[i]['name'].replace(XERPACKUNGEN, " ");
 
-        const KLAMMERINHALTE = /\([^)]*\)/g;
-        artikelScan[i]['name'] = artikelScan[i]['name'].replace(KLAMMERINHALTE, " ");
+            const PROZENTANGABEN = /\d+[.,]?\d*\s?%/g;
+            artikelScan[i]['name'] = artikelScan[i]['name'].replace(PROZENTANGABEN, " ");
 
-        const BIO = /bio/gi;
-        artikelScan[i]['name'] = artikelScan[i]['name'].replace(BIO, " ");
+            const KLAMMERINHALTE = /\([^)]*\)/g;
+            artikelScan[i]['name'] = artikelScan[i]['name'].replace(KLAMMERINHALTE, " ");
 
-        const SONDERZEICHEN_AUFRAUEMEN = /\s{2,}/g;
-        artikelScan[i]['name'] = artikelScan[i]['name'].replace(SONDERZEICHEN_AUFRAUEMEN, " ");
+            const BIO = /bio/gi;
+            artikelScan[i]['name'] = artikelScan[i]['name'].replace(BIO, " ");
 
-        const TRIMMEN = /^\W+|\W+$/g;
-        artikelScan[i]['name'] = artikelScan[i]['name'].replace(TRIMMEN, "");
+            const SONDERZEICHEN_AUFRAUEMEN = /\s{2,}/g;
+            artikelScan[i]['name'] = artikelScan[i]['name'].replace(SONDERZEICHEN_AUFRAUEMEN, " ");
 
-        // zu Lowercase konvertieren
-        artikelScan[i]['name'] = artikelScan[i]['name'].toLowerCase();
+            const TRIMMEN = /^\W+|\W+$/g;
+            artikelScan[i]['name'] = artikelScan[i]['name'].replace(TRIMMEN, "");
 
-        console.log(i, artikelScan[i]['name']);
-    }
-    
-    // create fuse
-    const fuse = new Fuse(artikelDB, {
-        keys: ['name'],
-        includeScore: true, 
-        threshold: 0.35 // muss ggbf. für längere Wörter erhöht werden; Wert zwischen 0 und 1, standardmäßig 0.6, Werte näher an 0 sind stärker eingrenzend
-    })
+            // zu Lowercase konvertieren
+            artikelScan[i]['name'] = artikelScan[i]['name'].toLowerCase();
 
-    // führe Fuzzy-Matching durch
-    for(let i=0; i<artikelScan.length; i++) {
-        const fuse_res = fuse.search(artikelScan[i]['name']);
-        console.log(fuse_res);
+            // console.log(i, artikelScan[i]['name']);
+        }
+        
+        // create fuse
+        const fuse = new Fuse(artikelDB, {
+            keys: ['name'],
+            includeScore: true, 
+            threshold: 0.35 // muss ggbf. für längere Wörter erhöht werden; Wert zwischen 0 und 1, standardmäßig 0.6, Werte näher an 0 sind stärker eingrenzend
+        })
+
+
+        let response_array = [];
+        // führe Fuzzy-Matching durch
+        for(let i=0; i<artikelScan.length; i++) {
+            const fuse_res = fuse.search(artikelScan[i]['name']);
+            // console.log(fuse_res);
+            
+            // füge Artikel mit seinen Matches in response_array ein:
+            response_array.push({tempId: artikelScan[i].tempId, matches: []})
+            for(let j=0; j<fuse_res.length; j++) {
+                response_array[i]['matches'].push({_id : fuse_res[j]["item"]["_id"], name: fuse_res[j]["item"]["name"], stueckzahl: fuse_res[j]["item"]["stueckzahl"]});
+            }
+        }
+
+        res.send(response_array);
+    } catch(error) {
+        res.status(500).json({ error: error.message });
     }
 }

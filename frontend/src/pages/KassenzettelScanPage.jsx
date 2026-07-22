@@ -131,12 +131,32 @@ const KassenzettelScanPage = () => {
     // stelle Post-Anfrage an fuzzy-matching, um Matches der Artikel zu bestimmen
     const token = localStorage.getItem('token');
     try {
-      await api.post("/artikel/fuzzy-matching",artikel_post, {
+      const res = await api.post("/artikel/fuzzy-matching",artikel_post, {
         headers: {
           'Authorization': `Bearer ${token}`, // Nur Token senden
           'Content-Type': 'application/json'
         }
       })
+      // füge Matches aus res.data in die erkannten Artikel ein, setze erkannteArtikel auf Artikel mit Matches
+      let artikel_mit_matches = [];
+      for(let i=0; i<res.data.length; i++) {
+        let index_post = -1;
+        for(let j=0; j<artikel_post.length; j++) {
+          if(res.data[i]["tempId"] === artikel_post[j]["tempId"]) {
+            index_post = j;
+            break;
+          }
+        }
+        artikel_mit_matches.push({name : artikel_post[index_post]["name"], stueckzahl : artikel_post[index_post]["stueckzahl"], 
+                                  matches: res.data[i]["matches"]
+        });
+        // füge Artikel selber in die Liste der Matches ein
+        const newMatch = {_id: undefined, name: artikel_mit_matches[i]["name"], stueckzahl: artikel[i]["stueckzahl"]};
+        artikel_mit_matches[i]["matches"] = [newMatch, ...artikel_mit_matches[i]["matches"]];
+      }
+
+      setErkannteArtikel(artikel_mit_matches);
+      // console.log(res.data);
     } catch(error) {
       console.log("Error determining fuzzy matches", error)
       if(error.response.status === 429) {
