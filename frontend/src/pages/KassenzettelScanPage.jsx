@@ -113,8 +113,8 @@ const KassenzettelScanPage = () => {
   };
 
   const entwicklungsScan = async () => {
-    const artikel = [{name : "Avocado Bio", stueckzahl : 3, matches : [{name: "Avocado", stueckzahl: 3}, {name: "Avocado unreif", stueckzahl: 2}]},
-                     {name : "Milch Bio 1L", stueckzahl : 4, matches: [{name: "H-Milch 3,5%", stueckzahl: 1}, {name: "Vollmilch 3,5%", stueckzahl: 2}]}]
+    const artikel = [{_id : undefined, name : "Avocado Bio", stueckzahl : 3, matches : [{name: "Avocado", stueckzahl: 3}, {name: "Avocado unreif", stueckzahl: 2}]},
+                     {_id : undefined, name : "Milch Bio 1L", stueckzahl : 4, matches: [{name: "H-Milch 3,5%", stueckzahl: 1}, {name: "Vollmilch 3,5%", stueckzahl: 2}]}]
     // füge artikel selber in die Liste der Matches hinzu
     for (let i=0; i<artikel.length; i++) {
       const newMatch = {name: artikel[i].name, stueckzahl: artikel[i].stueckzahl};
@@ -124,7 +124,7 @@ const KassenzettelScanPage = () => {
     // modifiziere Liste, sodass artikel_post nur den Produkt-Namen und eine tempId enthält
     let artikel_post = [];
     for(let i=0; i<artikel.length; i++) {
-      const current_artikel = {tempId: i+1, name: artikel[i].name};
+      const current_artikel = {tempId: i+1, name: artikel[i].name, stueckzahl: artikel[i].stueckzahl};
       artikel_post = [...artikel_post, current_artikel];
     }
 
@@ -147,14 +147,13 @@ const KassenzettelScanPage = () => {
             break;
           }
         }
-        artikel_mit_matches.push({name : artikel_post[index_post]["name"], stueckzahl : artikel_post[index_post]["stueckzahl"], 
+        artikel_mit_matches.push({_id : undefined, name : artikel_post[index_post]["name"], stueckzahl : artikel_post[index_post]["stueckzahl"], 
                                   matches: res.data[i]["matches"]
         });
         // füge Artikel selber in die Liste der Matches ein
         const newMatch = {_id: undefined, name: artikel_mit_matches[i]["name"], stueckzahl: artikel[i]["stueckzahl"]};
         artikel_mit_matches[i]["matches"] = [newMatch, ...artikel_mit_matches[i]["matches"]];
       }
-
       setErkannteArtikel(artikel_mit_matches);
       // console.log(res.data);
     } catch(error) {
@@ -176,17 +175,24 @@ const KassenzettelScanPage = () => {
     }
   }
 
+  const determineIdMatch = (matches, nameMatch) => {
+    for (let i=0; i < matches.length; i++) {
+      if (matches[i].name == nameMatch) {
+        return matches[i]._id;
+      }
+    }
+  }
+
   const handleArtikelChange = (index, field, value) => {
     const updated = [...erkannteArtikel];
     updated[index] = { ...updated[index], [field]: value };
     setErkannteArtikel(updated);
   };
 
-  const handleArtikelChangeNameUndStueckzahl = (index, artikelName, artikelStueckzahl) => {
+  const handleArtikelChangeNameStueckzahlId = (index, artikelName, artikelStueckzahl, artikelId) => {
       const updated = [...erkannteArtikel];
-      const stueckzahl_alt = updated[index]["stueckzahl"];
       // update name und stueckzahl
-      updated[index] = {...updated[index], name: artikelName, stueckzahl: artikelStueckzahl };
+      updated[index] = {...updated[index], _id: artikelId, name: artikelName, stueckzahl: artikelStueckzahl };
       setErkannteArtikel(updated);
   };
 
@@ -202,19 +208,36 @@ const KassenzettelScanPage = () => {
     for (const artikel of erkannteArtikel) {
       if (!artikel.name || artikel.name.trim() === '') continue;
       try {
-        await api.post(
-          '/vorratsartikel',
-          {
-            name: artikel.name.trim(),
-            stueckzahl: Number(artikel.stueckzahl) || 1,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
+        if (artikel._id === undefined) {
+          // console.log("Stückzahl: ", artikel.stueckzahl);
+          await api.post(
+            '/vorratsartikel',
+            {
+              name: artikel.name.trim(),
+              stueckzahl: Number(artikel.stueckzahl) || 1,
             },
-          }
-        );
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+        } else {
+          await api.put(
+            `/vorratsartikeladd/${artikel._id}`, 
+            {
+              name: artikel.name.trim(),
+              stueckzahl: Number(artikel.stueckzahl)
+            }, 
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+            }
+          )
+        }
         successCount++;
       } catch {
         errorCount++;
@@ -382,7 +405,8 @@ const KassenzettelScanPage = () => {
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       // onChange={(e) => {handleArtikelChange(index, 'stueckzahl', artikel.stueckzahl + determineStueckzahlMatch(artikel.matches, e.target.value)); 
                       //               handleArtikelChange(index, 'name', e.target.value);}}
-                      onChange = {(e) => handleArtikelChangeNameUndStueckzahl(index, e.target.value, determineStueckzahlMatch(artikel.matches, e.target.value))}
+                      onChange = {(e) => handleArtikelChangeNameStueckzahlId(index, e.target.value, determineStueckzahlMatch(artikel.matches, e.target.value),
+                                                                            determineIdMatch(artikel.matches, e.target.value) )}
                                  >
                       {
                         artikel.matches.map((match) => 

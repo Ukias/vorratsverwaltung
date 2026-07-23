@@ -8,7 +8,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import dotenv from 'dotenv';
-import { getAllVorratsartikel, getVorratsartikelById, createVorratsartikel, updateVorratsartikel,
+import { getAllVorratsartikel, getVorratsartikelById, createVorratsartikel, updateVorratsartikel, addVorratsartikelStueckzahl,
   deleteVorratsartikel, getVorratsartikelByUser, getStatistiken
  } from './controllers/vorratsController.js';
 import { getKategorieById, getKategorienByUser, createKategorie, deleteKategorie, updateKategorie } from "./controllers/kategorieController.js";
@@ -94,6 +94,9 @@ app.post('/api/vorratsartikel', authenticateToken, upload.single('bild'), create
 
 // PUT - Vorratsartikel bearbeiten
 app.put('/api/vorratsartikel/:id', upload.single('bild'), updateVorratsartikel);
+
+// PUT - Stückzahl zu einem Vorratsartikel dazuaddieren
+app.put('/api/vorratsartikeladd/:id', authenticateToken, addVorratsartikelStueckzahl);
 
 // DELETE - Vorratsartikel löschen
 app.delete('/api/vorratsartikel/:id', deleteVorratsartikel);

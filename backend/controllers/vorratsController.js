@@ -61,7 +61,6 @@ export async function createVorratsartikel(req, res) {
           kategorie: kategorie ? kategorie.trim() : null,
           userId: req.user.id
         };
-    	console.log("artikelData: ", artikelData);
         const neuerArtikel = new Vorratsartikel(artikelData);
         const gespeicherterArtikel = await neuerArtikel.save();
         
@@ -91,12 +90,13 @@ export async function getVorratsartikelByUser (req, res) {
 export async function updateVorratsartikel(req, res) {
       try {
         const { name, stueckzahl, haltbarkeitsdatum, kategorie } = req.body;
-        
+        console.log("before query");
         const artikel = await Vorratsartikel.findById(req.params.id);
         if (!artikel) {
           return res.status(404).json({ message: 'Vorratsartikel nicht gefunden' });
         }
-    
+        console.log("after query");
+
         // Altes Bild löschen wenn neues hochgeladen wird
         if (req.file && artikel.bild) {
           const alteBildPath = path.join('uploads', artikel.bild);
@@ -112,7 +112,8 @@ export async function updateVorratsartikel(req, res) {
         if (haltbarkeitsdatum !== undefined) {
           updateData.haltbarkeitsdatum = haltbarkeitsdatum ? new Date(haltbarkeitsdatum) : null;
         }
-        if (kategorie !== undefined) updateData.kategorie = kategorie.trim();
+        if (kategorie !== undefined) updateData.kategorie = kategorie ? kategorie.trim() : null;
+        console.log("after kategorie");
         if (req.file) updateData.bild = req.file.filename;
     
         const aktualisierterArtikel = await Vorratsartikel.findByIdAndUpdate(
@@ -127,6 +128,33 @@ export async function updateVorratsartikel(req, res) {
           fs.unlinkSync(req.file.path);
         }
         res.status(400).json({ message: error.message });
+      }
+}
+
+export async function addVorratsartikelStueckzahl(req, res) {
+      try {
+        const {name, stueckzahl} = req.body;
+
+        const artikel = await Vorratsartikel.findById(req.params.id);
+        if(!artikel) {
+          return res.status(404).json({message: 'Vorratsartikel nicht gefunden'});
+        }
+        // update nur die Stückzahl und übernehme alle anderen Felder aus der DB
+        const updateData = {};
+        updateData.name = artikel.name
+        if (stueckzahl !== undefined) updateData.stueckzahl = artikel.stueckzahl + parseInt(stueckzahl);
+        updateData.haltbarkeitsdatum = artikel.haltbarkeitsdatum;
+        updateData.kategorie = artikel.kategorie ? artikel.kategorie.trim() : null;
+        updateData.bild = artikel.bild;
+        const aktualisierterArtikel = await Vorratsartikel.findByIdAndUpdate(
+          req.params.id,
+          updateData,
+          { new: true, runValidators: true }
+        );
+        res.json(aktualisierterArtikel);        
+
+      } catch(error) {
+        res.status(400).json({message: error.message});
       }
 }
 
