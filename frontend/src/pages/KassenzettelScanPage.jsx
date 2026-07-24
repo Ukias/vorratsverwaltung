@@ -102,8 +102,40 @@ const KassenzettelScanPage = () => {
           'Content-Type': 'multipart/form-data',
         },
       });
+      // führe Fuzzy-Matching durch:
+      // modifiziere Liste, sodass artikel_post nur den Produkt-Namen und eine tempId enthält
+      let artikel_post = [];
+      for(let i=0; i<res.data.artikel.length; i++) {
+        const current_artikel = {tempId: i+1, name: res.data.artikel[i].name, stueckzahl: res.data.artikel[i].stueckzahl};
+        artikel_post = [...artikel_post, current_artikel];
+      }
+      // API-Call zu Fuzzy-Matching
+      const res2 = await api.post("/artikel/fuzzy-matching",artikel_post, {
+        headers: {
+          'Authorization': `Bearer ${token}`, // Nur Token senden
+          'Content-Type': 'application/json'
+        }
+      })
+      // füge Matches aus res2.data in die erkannten Artikel ein, setze erkannteArtikel auf Artikel mit Matches
+      let artikel_mit_matches = [];
+      for(let i=0; i<res2.data.length; i++) {
+        let index_post = -1;
+        // finde korrespondierenden Artikel zu res2.data[i] in artikel_post
+        for(let j=0; j<artikel_post.length; j++) {
+          if(res2.data[i]["tempId"] === artikel_post[j]["tempId"]) {
+            index_post = j;
+            break;
+          }
+        }
+        artikel_mit_matches.push({_id : undefined, name : artikel_post[index_post]["name"], stueckzahl : artikel_post[index_post]["stueckzahl"], 
+                                  matches: res2.data[i]["matches"]
+        });
+        // füge Artikel selber in die Liste der Matches ein
+        const newMatch = {_id: undefined, name: artikel_mit_matches[i]["name"], stueckzahl: artikel_mit_matches[i]["stueckzahl"]};
+        artikel_mit_matches[i]["matches"] = [newMatch, ...artikel_mit_matches[i]["matches"]];
+      }      
 
-      setErkannteArtikel(res.data.artikel);
+      setErkannteArtikel(artikel_mit_matches);
       toast.success(`${res.data.artikel.length} Artikel erkannt`);
     } catch (error) {
       toast.error('Fehler beim Einlesen: ' + (error.response?.data?.message || error.message));
@@ -209,7 +241,6 @@ const KassenzettelScanPage = () => {
       if (!artikel.name || artikel.name.trim() === '') continue;
       try {
         if (artikel._id === undefined) {
-          // console.log("Stückzahl: ", artikel.stueckzahl);
           await api.post(
             '/vorratsartikel',
             {
