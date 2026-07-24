@@ -130,8 +130,13 @@ const KassenzettelScanPage = () => {
         artikel_mit_matches.push({_id : undefined, name : artikel_post[index_post]["name"], stueckzahl : artikel_post[index_post]["stueckzahl"], 
                                   matches: res2.data[i]["matches"]
         });
-        // füge Artikel selber in die Liste der Matches ein
-        const newMatch = {_id: undefined, name: artikel_mit_matches[i]["name"], stueckzahl: artikel_mit_matches[i]["stueckzahl"]};
+        /* füge Attribut "name_drop_down" in die Match-Artikel ein, für Vermeidung doppelter Einträge in Drop-Down, wenn Artikel mit selbem Namen
+        /* beim fuzzy Matching in der Datenbank gefunden wird*/
+        for(let j=0; j < artikel_mit_matches[i].matches.length; j++) {
+          artikel_mit_matches[i].matches[j]["name_drop_down"] = artikel_mit_matches[i].matches[j]["name"];
+        }
+        // füge Artikel selber in die Liste der Matches ein mit dem Attribut "name_drop_down" auf "Neuer Artikel" gesetzt
+        const newMatch = {_id: undefined, name: artikel_mit_matches[i]["name"], name_drop_down: "Neuer Artikel", stueckzahl: artikel_mit_matches[i]["stueckzahl"]};
         artikel_mit_matches[i]["matches"] = [newMatch, ...artikel_mit_matches[i]["matches"]];
       }      
 
@@ -190,7 +195,7 @@ const KassenzettelScanPage = () => {
           artikel_mit_matches[i].matches[j]["name_drop_down"] = artikel_mit_matches[i].matches[j]["name"];
         }
         // füge Artikel selber in die Liste der Matches ein mit dem Attribut "name_drop_down" auf "Neuer Artikel" gesetzt
-        const newMatch = {_id: undefined, name: artikel_mit_matches[i]["name"], name_drop_down: "Neuer Artikel", stueckzahl: artikel[i]["stueckzahl"]};
+        const newMatch = {_id: undefined, name: artikel_mit_matches[i]["name"], name_drop_down: "Neuer Artikel", stueckzahl: artikel_mit_matches[i]["stueckzahl"]};
         artikel_mit_matches[i]["matches"] = [newMatch, ...artikel_mit_matches[i]["matches"]];
       }
       setErkannteArtikel(artikel_mit_matches);
