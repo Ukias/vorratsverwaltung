@@ -169,7 +169,7 @@ const KassenzettelScanPage = () => {
           'Content-Type': 'application/json'
         }
       })
-      // füge Matches aus res.data in die erkannten Artikel ein, setze erkannteArtikel auf Artikel mit Matches
+      // füge Matches aus res.data in die erkannten Artikel ein
       let artikel_mit_matches = [];
       for(let i=0; i<res.data.length; i++) {
         let index_post = -1;
@@ -179,11 +179,18 @@ const KassenzettelScanPage = () => {
             break;
           }
         }
-        artikel_mit_matches.push({_id : undefined, name : artikel_post[index_post]["name"], stueckzahl : artikel_post[index_post]["stueckzahl"], 
+        // finde korrespondierenden Artikel zu res.data[i] in artikel_post
+        artikel_mit_matches.push({_id : undefined, name : artikel_post[index_post]["name"],
+                                  stueckzahl : artikel_post[index_post]["stueckzahl"], 
                                   matches: res.data[i]["matches"]
         });
-        // füge Artikel selber in die Liste der Matches ein
-        const newMatch = {_id: undefined, name: artikel_mit_matches[i]["name"], stueckzahl: artikel[i]["stueckzahl"]};
+        /* füge Attribut "name_drop_down" in die Match-Artikel ein, für Vermeidung doppelter Einträge in Drop-Down, wenn Artikel mit selbem Namen
+        /* beim fuzzy Matching in der Datenbank gefunden wird*/
+        for(let j=0; j < artikel_mit_matches[i].matches.length; j++) {
+          artikel_mit_matches[i].matches[j]["name_drop_down"] = artikel_mit_matches[i].matches[j]["name"];
+        }
+        // füge Artikel selber in die Liste der Matches ein mit dem Attribut "name_drop_down" auf "Neuer Artikel" gesetzt
+        const newMatch = {_id: undefined, name: artikel_mit_matches[i]["name"], name_drop_down: "Neuer Artikel", stueckzahl: artikel[i]["stueckzahl"]};
         artikel_mit_matches[i]["matches"] = [newMatch, ...artikel_mit_matches[i]["matches"]];
       }
       setErkannteArtikel(artikel_mit_matches);
@@ -441,7 +448,7 @@ const KassenzettelScanPage = () => {
                                  >
                       {
                         artikel.matches.map((match) => 
-                          <option val={match.name}>{match.name}</option>)
+                          <option value={match.name}>{match.name_drop_down}</option>)
                       }
                     </select>
                   </div>
