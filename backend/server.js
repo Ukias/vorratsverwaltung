@@ -14,6 +14,7 @@ import { getAllVorratsartikel, getVorratsartikelById, createVorratsartikel, upda
 import { getKategorieById, getKategorienByUser, createKategorie, deleteKategorie, updateKategorie } from "./controllers/kategorieController.js";
 import { scanKassenzettel } from "./controllers/kassenzettelController.js";
 import {fuzzyMatching} from "./controllers/fuzzyMatchingController.js";
+import {requireCredits} from "./middleware/creditMiddleware.js";
 import {login} from './controllers/authController.js'
 import {register} from './controllers/registrationController.js'
 import { authenticateToken } from './controllers/authController.js';
@@ -137,7 +138,7 @@ const uploadMemory = multer({
     }
   }
 });
-app.post('/api/kassenzettel/scan', authenticateToken, uploadMemory.single('bild'), scanKassenzettel);
+app.post('/api/kassenzettel/scan', authenticateToken, requireCredits(1), uploadMemory.single('bild'), scanKassenzettel);
 
 // POST - Login 
 app.post('/api/login', login);

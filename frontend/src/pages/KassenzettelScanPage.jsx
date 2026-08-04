@@ -9,6 +9,7 @@ const KassenzettelScanPage = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [erkannteArtikel, setErkannteArtikel] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [paymentErrorMessage, setPaymentErrorMessage] = useState("");
   const [cameraActive, setCameraActive] = useState(false);
   const [stream, setStream] = useState(null);
 
@@ -144,6 +145,10 @@ const KassenzettelScanPage = () => {
       toast.success(`${res.data.artikel.length} Artikel erkannt`);
     } catch (error) {
       toast.error('Fehler beim Einlesen: ' + (error.response?.data?.message || error.message));
+      // behandle Fehlerfall, dass nicht genügend Guthaben für einen Kassenzettel-Scan vorhanden ist
+      if (error.response?.status == 402) {
+        setPaymentErrorMessage("Nicht genügend Guthaben für einen Kassenzettel-Scan.");
+      }
     } finally {
       setLoading(false);
     }
@@ -413,6 +418,11 @@ const KassenzettelScanPage = () => {
               Entwicklungstest
             </>
           </button>
+          {paymentErrorMessage != "" && (
+            <div className="text-red-600">
+              {paymentErrorMessage}
+            </div>
+          )}          
         </div>
 
         {/* Erkannte Artikel */}
