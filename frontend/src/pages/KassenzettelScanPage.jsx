@@ -203,6 +203,7 @@ const KassenzettelScanPage = () => {
         const newMatch = {_id: undefined, name: artikel_mit_matches[i]["name"], name_drop_down: "Neuer Artikel", stueckzahl: artikel_mit_matches[i]["stueckzahl"]};
         artikel_mit_matches[i]["matches"] = [newMatch, ...artikel_mit_matches[i]["matches"]];
       }
+      console.log("Artikel mit Matches: ", artikel_mit_matches);
       setErkannteArtikel(artikel_mit_matches);
       // console.log(res.data);
     } catch(error) {
@@ -225,9 +226,12 @@ const KassenzettelScanPage = () => {
   }
 
   const determineIdMatch = (matches, nameMatch) => {
-    for (let i=0; i < matches.length; i++) {
-      if (matches[i].name == nameMatch) {
-        return matches[i]._id;
+    // entferne ersten Match aus der Liste der Matches, um bei gleichlautendem Namen eines in der DB enthaltenen Artikels, den DB-Artikel auszuwählen
+    const matches_modified = matches.toSpliced(0,1);
+    // suche erste Übereinstimmung des Namens in der Liste der modifizierten Matches
+    for (let i=0; i < matches_modified.length; i++) {
+      if (matches_modified[i].name == nameMatch) {
+        return matches_modified[i]._id;
       }
     }
   }
