@@ -414,14 +414,14 @@ const KassenzettelScanPage = () => {
               </>
             )}
           </button>
-          <button 
+          {/*<button 
             onClick={entwicklungsScan}
             className="w-full bg-yellow-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <>
               Entwicklungstest
             </>
-          </button>
+          </button> */}
           {paymentErrorMessage != "" && (
             <div className="text-red-600">
               {paymentErrorMessage}
