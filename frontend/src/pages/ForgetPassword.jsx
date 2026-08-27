@@ -28,6 +28,9 @@ const ForgetPassword = () => {
                 }, 3000);                
               })
               .catch((error) => {
+                console.log("error.response:", error.response);
+                console.log("error.request:", error.request);
+                console.log("error.message:", error.message);                
                 if (error.response.status === 404) {
                   toast.error("Email nicht gefunden");
                 } else {
