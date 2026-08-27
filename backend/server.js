@@ -17,6 +17,7 @@ import {fuzzyMatching} from "./controllers/fuzzyMatchingController.js";
 import {requireCredits} from "./middleware/creditMiddleware.js";
 import {login} from './controllers/authController.js'
 import {register} from './controllers/registrationController.js'
+import {forgetPassword, resetPassword} from "./controllers/forgetPasswordController.js";
 import { authenticateToken } from './controllers/authController.js';
 import rateLimiter from "./middleware/rateLimiter.js"
 dotenv.config();
@@ -152,6 +153,10 @@ app.post('/api/logout', (req, res) => {
 
 // POST - registration
 app.post('/api/registration', register);
+
+// Forget password routes:
+app.post('/api/forgetPassword', forgetPassword);
+app.post('/api/reset-password/:token', resetPassword);
 
 // Error Handler
 app.use((error, req, res, next) => {

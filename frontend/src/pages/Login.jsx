@@ -89,6 +89,9 @@ const Login = () => {
                 <div>
                     <Link to= {"/registration"}>Zur Registrierung</Link>
                 </div>
+                <div>
+                    <Link to= {"/forgetPassword"}>Passwort vergessen</Link>
+                </div>
             </form>
         </div>
     )

@@ -13,6 +13,8 @@ import KassenzettelScanPage from './pages/KassenzettelScanPage';
 import Root from './components/Root'
 import Login from './pages/Login'
 import Registration from './pages/Registration'
+import ForgetPassword from './pages/ForgetPassword'
+import ResetPassword from './pages/ResetPassword'
 import ProtectedRoutes from './lib/ProtectedRoutes'
 import { Toaster } from 'react-hot-toast';
 
@@ -218,6 +220,8 @@ const InventoryApp = () => {
           <Route path="/editKategorie/:id" element={<ProtectedRoutes requiredRole={["customer"]}><KategorieEditPage/></ProtectedRoutes>}/>
           <Route path="/kassenzettel" element={<ProtectedRoutes requiredRole={["customer"]}><KassenzettelScanPage/></ProtectedRoutes>}/>
           <Route path="/login" element={<Login/>} />
+          <Route path="/forgetPassword" element={<ForgetPassword/>} />
+          <Route path="/reset-password/:token" element={<ResetPassword/>} />
           <Route path="/registration" element={<Registration/>} />
           <Route path="/unauthorized" element={<p className='font-bold text-3xl mt-20 ml-20'>Unauthorized</p>}/>          
         </Routes>
