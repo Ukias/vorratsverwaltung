@@ -18,6 +18,7 @@ const ForgetPassword = () => {
             email: Yup.string().email("Ungültige E-Mail-Adresse").required("Erforderlich"),
           })}
           onSubmit = {(values) => {
+            console.log("in onSubmit");
             api
               .post("/forgetPassword", values)
               .then((response) => {
