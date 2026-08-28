@@ -3,7 +3,12 @@ import jwt from "jsonwebtoken";
 import bycrypt from "bcrypt";
 import dotenv from "dotenv";
 dotenv.config();
-import nodemailer from "nodemailer"; // INSTALL
+// import nodemailer from "nodemailer"; // INSTALL
+import { BrevoClient } from '@getbrevo/brevo';
+
+const brevo = new BrevoClient({
+  apiKey: process.env.BREVO_API_KEY,
+});
 
 export const forgetPassword = async (req, res) => {
   try {
@@ -19,41 +24,51 @@ export const forgetPassword = async (req, res) => {
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {expiresIn: "10m",});
     
     // Send the token to the user's email
-    const transporter = nodemailer.createTransport({
-      host: "smtp-relay.brevo.com",
-      port: 587,
-      secure: false, // TLS wird via STARTTLS auf Port 587 gehandhabt
-      auth: {
-        user: process.env.BREVO_SMTP_LOGIN,
-        pass: process.env.BREVO_SMTP_KEY,
-      },
-      connectionTimeout: 10000,
-      greetingTimeout: 10000,
-      socketTimeout: 10000,
-    });
+    // const transporter = nodemailer.createTransport({
+    //   host: "smtp-relay.brevo.com",
+    //   port: 587,
+    //   secure: false, // TLS wird via STARTTLS auf Port 587 gehandhabt
+    //   auth: {
+    //     user: process.env.BREVO_SMTP_LOGIN,
+    //     pass: process.env.BREVO_SMTP_KEY,
+    //   },
+    //   connectionTimeout: 10000,
+    //   greetingTimeout: 10000,
+    //   socketTimeout: 10000,
+    // });
 
     // Email configuration (!!! change href of link for production !!!)
-    const mailOptions = {
-      from: process.env.EMAIL,
-      to: req.body.email,
-      subject: "Passwort zurücksetzen",
-      html: `<h1>Setzen Sie Ihr Passwort zurück</h1>
-    <p>Klicken Sie auf folgenden Link, um Ihr Passwort zurückzusetzen:</p>
-    <a href="https://vorratsverwaltung.onrender.com/reset-password/${token}">https://vorratsverwaltung.onrender.com/reset-password/${token}</a>
-    <p>Der Link ist nur 10 Minuten gültig.</p>
-    <p>Wenn Sie Ihr Passwort nicht zurücksetzen möchten, ignorieren Sie diese E-Mail.</p>`,
-    };
-
+    // const mailOptions = {
+    //   from: process.env.EMAIL,
+    //   to: req.body.email,
+    //   subject: "Passwort zurücksetzen",
+    //   html: `<h1>Setzen Sie Ihr Passwort zurück</h1>
+    // <p>Klicken Sie auf folgenden Link, um Ihr Passwort zurückzusetzen:</p>
+    // <a href="https://vorratsverwaltung.onrender.com/reset-password/${token}">https://vorratsverwaltung.onrender.com/reset-password/${token}</a>
+    // <p>Der Link ist nur 10 Minuten gültig.</p>
+    // <p>Wenn Sie Ihr Passwort nicht zurücksetzen möchten, ignorieren Sie diese E-Mail.</p>`,
+    // };
     console.log("Vor sendMail für: ", req.body.email);
+    await brevo.transactionalEmails.sendTransacEmail({
+      subject: "Passwort zurücksetzen",
+      htmlContent: `<h1>Setzen Sie Ihr Passwort zurück</h1>
+        <p>Klicken Sie auf folgenden Link, um Ihr Passwort zurückzusetzen:</p>
+        <a href="https://vorratsverwaltung.onrender.com/reset-password/${token}">https://vorratsverwaltung.onrender.com/reset-password/${token}</a>
+        <p>Der Link ist nur 10 Minuten gültig.</p>`,
+      sender: { name: "Vorratsverwaltung", email: process.env.EMAIL },
+      to: [{ email: req.body.email }],
+    });   
+
     // Send the email
-    transporter.sendMail(mailOptions, (err, info) => {
-      if (err) {
-        console.error("Fehler beim E-Mail-Versand: ", err);
-        return res.status(500).send({ message: err.message });
-      }
-      console.log("E-Mail erfolgreich gesendet: ", info.response);
-      res.status(200).send({ message: "Email gesendet" });
-    });
+    // transporter.sendMail(mailOptions, (err, info) => {
+    //   if (err) {
+    //     console.error("Fehler beim E-Mail-Versand: ", err);
+    //     return res.status(500).send({ message: err.message });
+    //   }
+    //   console.log("E-Mail erfolgreich gesendet: ", info.response);
+    //   res.status(200).send({ message: "Email gesendet" });
+    // });
+    res.status(200).send({ message: "Email gesendet" });
   } catch (err) {
     console.error("Fehler im forgetPassword-Controller", err);
     res.status(500).send({ message: err.message });
