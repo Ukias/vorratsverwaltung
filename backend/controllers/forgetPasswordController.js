@@ -20,13 +20,15 @@ export const forgetPassword = async (req, res) => {
     
     // Send the token to the user's email
     const transporter = nodemailer.createTransport({
-      service: "gmail",
+      host: "smtp-relay.brevo.com",
+      port: 587,
+      secure: false, // TLS wird via STARTTLS auf Port 587 gehandhabt
       auth: {
-        user: process.env.EMAIL,
-        pass: process.env.PASSWORD_APP_EMAIL,
+        user: process.env.BREVO_SMTP_LOGIN,
+        pass: process.env.BREVO_SMTP_KEY,
       },
       connectionTimeout: 10000,
-      greetingTimeout: 100000, 
+      greetingTimeout: 10000,
       socketTimeout: 10000,
     });
 
