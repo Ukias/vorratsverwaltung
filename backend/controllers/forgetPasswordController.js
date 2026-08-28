@@ -25,6 +25,9 @@ export const forgetPassword = async (req, res) => {
         user: process.env.EMAIL,
         pass: process.env.PASSWORD_APP_EMAIL,
       },
+      connectionTimeout: 10000,
+      greetingTimeout: 100000, 
+      socketTimeout: 10000,
     });
 
     // Email configuration (!!! change href of link for production !!!)
@@ -39,14 +42,18 @@ export const forgetPassword = async (req, res) => {
     <p>Wenn Sie Ihr Passwort nicht zurücksetzen möchten, ignorieren Sie diese E-Mail.</p>`,
     };
 
+    console.log("Vor sendMail für: ", req.body.email);
     // Send the email
     transporter.sendMail(mailOptions, (err, info) => {
       if (err) {
+        console.error("Fehler beim E-Mail-Versand: ", err);
         return res.status(500).send({ message: err.message });
       }
+      console.log("E-Mail erfolgreich gesendet: ", info.response);
       res.status(200).send({ message: "Email gesendet" });
     });
   } catch (err) {
+    console.error("Fehler im forgetPassword-Controller", err);
     res.status(500).send({ message: err.message });
   }
 };
