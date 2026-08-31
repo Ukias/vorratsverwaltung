@@ -1,68 +1,80 @@
+// passende Fehlermeldung, wenn User bereits vergeben ist.
+
 import React, {useState} from 'react';
-import {useNavigate} from "react-router"
+// import {useNavigate} from "react-router"
 import api from "../lib/axios";
+import {Formik, Form, Field, ErrorMessage} from "formik";
+import * as Yup from "yup";
+import toast, { Toaster } from "react-hot-toast"
 
 const Registration = () => {
-    const [email, setEmail] = useState("");     
-    const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
-    const navigate = useNavigate();
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        if(!email || !password) {
-            return;
-        }
-
-        try {
-            await api.post("/registration", {
-                email, 
-                password
-            })
-            navigate("/login")
-            
-        } catch(error) {
-            console.log("Error creating user", error);
-        } finally {
-            setLoading(false);
-        }
-    }
 
   return (
     <div className="flex flex-col items-center h-screen justify-center bg-gradient-to-b from-green-600 from-50% to-gray-100 to-50% space-y-6">
         <h1 className="text-3xl text-white">Registration</h1>
+        <Formik 
+          initialValues = {{
+            email: "",
+            password: "",
+          }}
+          validationSchema = {Yup.object({
+            email: Yup.string().email("Ungültige E-Mail-Adresse").required("Erforderlich"),
+            password: Yup.string().required("Erforderlich").min(6, "Zu kurz!"),
+          })}
+          onSubmit = {(values) => {
+            const { email, password } = values;
+            api
+              .post("/registration", {
+                            email, 
+                            password
+                        })
+              .then((response) => {
+                toast.success("Registrierung erfolgreich.");
+                setTimeout(() => {
+                  window.location.href = "/login";
+                }, 3000);                
+              })
+              .catch((error) => {                
+                    toast.error("Server error");
+              })
+              .finally(() => {
+                setLoading(false);
+              });
+          }}
+        >        
         <div className="border shadow-lg p-6 w-80 bg-white">
-            <form className="registration-form" onSubmit={handleSubmit}>
+            <Form>
                 <div className="mb-4">
                     <label className="block text-gray-700" htmlFor="email">Email</label>
-                    <input 
+                    <Field 
                         className="w-full px-3 py-2 border"
-                        type="text"
+                        type="email"
                         id="email"
                         name="email"
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Enter Email"
+                        placeholder="E-Mail eingeben"
                         required />
+                    <ErrorMessage name="email" component="div" className="text-red-500" />                        
                 </div>
                 <div className="mb-4">
                     <label className="block text-gray-700" htmlFor="password">Password</label>
-                    <input 
+                    <Field 
                         className="w-full px-3 py-2 border"
                         type="password"
                         id="password"
                         name="password"
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Enter password"
+                        placeholder="Passwort eingeben"
                         required />
+                    <ErrorMessage name="password" component="div" className="text-red-500" />    
                 </div>
                 <button 
                     type="submit"
                     className="w-full bg-green-600 text-white py-2">
-                    {loading ? "Loading..." : "Register"}
+                    {loading ? "Lädt..." : "Registrieren"}
                 </button>
-            </form>
+            </Form>
         </div>
+        </Formik>
     </div>
   )
 }
