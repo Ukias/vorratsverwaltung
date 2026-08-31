@@ -87,10 +87,10 @@ const Login = () => {
                     {loading ? "Loading..." : "Login"}
                 </button>
                 <div>
-                    <Link to= {"/registration"}>Zur Registrierung</Link>
+                    <Link class="hover:underline" to= {"/registration"}>Zur Registrierung</Link>
                 </div>
                 <div>
-                    <Link to= {"/forgetPassword"}>Passwort vergessen</Link>
+                    <Link class="hover:underline" to= {"/forgetPassword"}><span class="text-blue-700">&rarr;</span> Passwort vergessen?</Link>
                 </div>
             </form>
         </div>
